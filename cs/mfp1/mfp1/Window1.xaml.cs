@@ -23,15 +23,18 @@ namespace mfp1
 	/// </summary>
 	public partial class Window1 : Window
 	{
+		Particle x;
 		public Window1()
 		{
 			InitializeComponent();
+			x = new Particle();
 		}
 		
 		void button1_Click(object sender, RoutedEventArgs e)
 		{
-			MessageBox.Show("Hi there!");
-			
+			//MessageBox.Show("Hi there!");
+			x.update();
+			x.draw(mainCanvas);
 		}
 	}
 }

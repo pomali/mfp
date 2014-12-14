@@ -8,57 +8,50 @@
  */
 using System;
 using System.Linq.Expressions;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Shapes;
 
 namespace mfp1
 {
 	/// <summary>
 	/// Description of Particle.
 	/// </summary>
-	public class Particle:ModelVisual3D
+	public class Particle
 	{
 		double mass = 1; 
-		Vector3D velocity;
-		Vector3D position;
-		const Vector3D shift_A0 = new Vector3D(0.05,0.05,0.05);
-		const Vector3D shift_A1 = new Vector3D(0.1,0,0);
-		const Vector3D shift_A2 = new Vector3D(0,0.1,0);
-		const Vector3D shift_A3 = new Vector3D(0,0,0.1);
+		Vector velocity;
+		Vector position;
 		
 		public Particle()
 		{
-			velocity = new Vector3D(0,0,0);
-			position = new Vector3D(10,10,10);
+			velocity = new Vector(1,1);
+			position = new Vector(1,1);
 		}
 		
 		
-		public void draw(Viewport3D view)
+		public void draw(Canvas c)
 		{
-			MeshGeometry3D repr = new MeshGeometry3D();
-			// Vrcholy
-			repr.Positions.Add(this.position + shift_A0);
-			repr.Positions.Add(this.position + shift_A1);
-			repr.Positions.Add(this.position + shift_A2);
-			repr.Positions.Add(this.position + shift_A3);
+			update();
+			Ellipse circle = new Ellipse();
+			SolidColorBrush brush = new SolidColorBrush();
+			brush.Color = Color.FromArgb(255,225,255,0);
+			circle.Fill = brush;
+			circle.StrokeThickness = 1;
+			circle.Stroke = Brushes.Black;
+			circle.Width = 10;
+			circle.Height = 10;
 			
-			// Steny
-			repr.TriangleIndices.Add(0);
-			repr.TriangleIndices.Add(1);
-			repr.TriangleIndices.Add(2);
+			c.Children.Add(circle);
 			
-			repr.TriangleIndices.Add(0);
-			repr.TriangleIndices.Add(1);
-			repr.TriangleIndices.Add(3);
-			
-			repr.TriangleIndices.Add(0);
-			repr.TriangleIndices.Add(2);
-			repr.TriangleIndices.Add(3);
-			
-			repr.TriangleIndices.Add(1);
-			repr.TriangleIndices.Add(2);
-			repr.TriangleIndices.Add(3);
-			
+		}
+		
+		public void update()
+		{
+			position = position + velocity;
+			MessageBox.Show(position.ToString());
 		}
 	}
 }
