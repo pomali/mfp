@@ -15,6 +15,7 @@ namespace mfp2
 {
 	/// <summary>
 	/// Description of PBDSystem.
+	/// http://matthias-mueller-fischer.ch/publications/posBasedDyn.pdf
 	/// </summary>
 	public class PBDSystem
 	{
@@ -32,15 +33,16 @@ namespace mfp2
             	x.Draw(g);
             }
 			
-			g.DrawLine(Pens.Black,0,(float)limit_Y,800,(float)limit_Y);
+			g.DrawLine(Pens.Black,0,(float)limit_Y,g.VisibleClipBounds.Width,(float)limit_Y);
 		}
 		public void Update()
 		{
-			double dt = 0.01;
+			double dt = 0.1;
 			double kd = 0.001;
 			double lifetime = 50;
-			int ns = 10;
+			int ns = 3;
 			
+			// 1: Remove old particles
 			List<ParticleGroup> to_remove = new List<ParticleGroup>();
 			foreach (ParticleGroup x in particle_groups)
             {
@@ -60,7 +62,7 @@ namespace mfp2
             {
 				foreach(Particle p in x.particles)
 				{
-					p.velocity += dt * p.w * g_acceleration;
+					p.velocity += dt * p.mass * g_acceleration;
 				}
             }
 			
@@ -80,18 +82,17 @@ namespace mfp2
 				foreach(Particle p in x.particles)
 				{
 					p.q = p.position + dt * p.velocity;
-					p.position = p.q;
 				}
             }
 			
 //			//6: detect and construct collision constraints
-			foreach (ParticleGroup x in particle_groups)
-            {
-				foreach(Particle p in x.particles)
-				{
-					p.q = p.position + dt * p.velocity;
-				}
-            }
+//			foreach (ParticleGroup x in particle_groups)
+//            {
+//				foreach(Particle p in x.particles)
+//				{
+//					//p.q = p.position + dt * p.velocity;
+//				}
+//            }
 			
 			
 			//7: apply "projection" several times on all constraints
@@ -117,6 +118,7 @@ namespace mfp2
 			
 			
 			//9: apply friction and resistution impulses on velocities
+			//no friction or resistution is needed
 		}
 		
 		public void Spawn()

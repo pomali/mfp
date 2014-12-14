@@ -41,12 +41,13 @@ namespace mfp2
 //            g.InterpolationMode = InterpolationMode.NearestNeighbor;
 //            g.PixelOffsetMode = PixelOffsetMode.Half;
         	pdb.Draw(g);
-        	pdb.Update();
+
 		}
 		
 		void TimerRedrawTick(object sender, EventArgs e)
 		{
 			this.Invalidate();
+			pdb.Update(); //ked chces zabavu tak to daj do onpaint a resizuj
 		}
 		
 		void TimerParticleEmitterTick(object sender, EventArgs e)

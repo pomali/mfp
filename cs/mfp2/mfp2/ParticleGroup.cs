@@ -36,7 +36,7 @@ namespace mfp2
 		
 		public void ProjectDistanceConstraints()
 		{
-			double L = 0.5;
+			double L = 15;
 			double s = ((distance - L)/(w_total))/distance;
 			a.q += (-a.w)*s*vect;
 			a.q += (b.w)*s*vect;
@@ -61,7 +61,7 @@ namespace mfp2
 		}
 		
 		double w_total { get { return a.w + b.w;}}
-		Vector4 vect { get { return a.position - b.position;}}
+		Vector4 vect { get { return a.q - b.q;}}
 		double distance { get { return vect.Length;}}
 	}
 

@@ -18,11 +18,11 @@ namespace mfp2
 	/// </summary>
 	public class Particle
 	{
-		public double mass = 0.9;
+		public double mass = 1;
 		public Vector4 velocity = new Vector4(0,0,0,0);
 		public Vector4 position = new Vector4(400,80,0,0);
 		public Vector4 acceleration = new Vector4(0,0,0,0);
-		public Vector4 q;
+		public Vector4 q; // pozicia pocas medzivypoctov
 		
 		Brush brush = Brushes.Blue;
 		
