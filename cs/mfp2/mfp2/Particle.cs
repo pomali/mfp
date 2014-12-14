@@ -18,13 +18,12 @@ namespace mfp2
 	/// </summary>
 	public class Particle
 	{
-		public double mass = 0.01;
+		public double mass = 0.9;
 		public Vector4 velocity = new Vector4(0,0,0,0);
 		public Vector4 position = new Vector4(400,80,0,0);
 		public Vector4 acceleration = new Vector4(0,0,0,0);
 		public Vector4 q;
-
-		bool active = true;
+		
 		Brush brush = Brushes.Blue;
 		
 		public Particle( Brush in_brush, int seed = 0)
@@ -32,7 +31,7 @@ namespace mfp2
 			Random rnd = new Random(seed);
 			velocity = new Vector4(3-(rnd.NextDouble()*10),-(rnd.NextDouble()*3),0,0);
 			position = new Vector4(400+rnd.Next(-10,10),80+rnd.Next(-10,10),0,0);
-			//mass = rnd.NextDouble();
+			//mass = rnd.NextDouble()*0.1;
 			brush = in_brush;
 		}
 		
@@ -41,25 +40,6 @@ namespace mfp2
 			g.FillEllipse(brush, (float)(position.X-1.5), (float)(position.Y-1.5), 3, 3);
 		}
 		
-		public void Update()
-		{
-			if(active){
-				if (position.X < 760 && position.X > 0 && position.Y < 560 && position.Y > 0)
-				{
-					position += velocity;
-					velocity += mass * (acceleration);
-				}
-				else
-				{
-					position = new Vector4(
-						Math.Max(Math.Min(position.X,760),0),
-						Math.Max(Math.Min(position.Y,560),0),
-						0,0);
-					velocity = new Vector4(0,0,0,0);
-					//active = false;
-				}
-			}
-		}
 		
 		public double w
 		{

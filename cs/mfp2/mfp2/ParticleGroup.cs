@@ -34,34 +34,19 @@ namespace mfp2
 			g.DrawLine(Pens.SlateGray, (float)a.position.X, (float)a.position.Y, (float)b.position.X, (float)b.position.Y);
 		}
 		
-		public void Update()
-		{
-			double ks = 0.5;
-			double kd = 0.5;
-			double L = 0;
-			Vector4 c = (a.position - b.position);
-			double distance = c.Length;
-			Vector4 f = - ( ks * (distance - L) )* ( (1/distance) * c );
-			               // + kd/distance * (a.velocity.Length - b.velocity.Length)
-			double total_mass = a.mass + b.mass;
-			a.acceleration += (total_mass/(total_mass-a.mass))*f; //inverse mass * f
-			b.acceleration += (-total_mass/(total_mass-b.mass))*f;
-
-		}
-		
 		public void ProjectDistanceConstraints()
 		{
-			double L = 25;
+			double L = 0.5;
 			double s = ((distance - L)/(w_total))/distance;
 			a.q += (-a.w)*s*vect;
 			a.q += (b.w)*s*vect;
 		}
 		
-		public void ProjectFloorConstraints()
+		public void ProjectFloorConstraints(double limit)
 		{
-			// chcem aby bola Y suradnica < 600
-			// teda chcem p1.Y - 600 < 0
-			double limit = 600;
+			// chcem aby bola Y suradnica < limit
+			// teda chcem p1.Y - limit < 0
+
 			double ca = a.q.Y - limit;
 			double cb = b.q.Y - limit;
 			if (ca >= 0)
@@ -86,6 +71,7 @@ namespace mfp2
 		
 		public List<ParticlePair> particle_pairs = new List<ParticlePair>();
 		public List<Particle> particles = new List<Particle>();
+		public DateTime born;
 		
 		public ParticleGroup()
 		{
@@ -101,6 +87,7 @@ namespace mfp2
 			particle_pairs.Add(new ParticlePair(a,b));
 			particle_pairs.Add(new ParticlePair(b,c));
 			particle_pairs.Add(new ParticlePair(a,c));
+			born = DateTime.Now;
 		}
 		
 		
@@ -118,19 +105,6 @@ namespace mfp2
 			
 		}
 		
-		public void Update()
-		{
-			foreach(Particle p in particles)
-			{
-				p.Update();
-			} 
-			
-			foreach(ParticlePair p in particle_pairs)
-			{
-				p.Update();
-			}
-		}
-		
 		public void ProjectDistanceConstraints()
 		{
 			foreach(ParticlePair p in particle_pairs)
@@ -139,11 +113,11 @@ namespace mfp2
 			}
 		}
 		
-		public void ProjectFloorConstraints()
+		public void ProjectFloorConstraints(double limit)
 		{
 			foreach(ParticlePair p in particle_pairs)
 			{
-				p.ProjectFloorConstraints();
+				p.ProjectFloorConstraints(limit);
 			}
 		}
 		

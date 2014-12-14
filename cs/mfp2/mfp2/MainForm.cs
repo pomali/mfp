@@ -35,7 +35,7 @@ namespace mfp2
 		
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			base.OnPaint(e);
+			//base.OnPaint(e);
 			Graphics g = e.Graphics;
 //            g.SmoothingMode = SmoothingMode.AntiAlias;
 //            g.InterpolationMode = InterpolationMode.NearestNeighbor;
@@ -74,6 +74,11 @@ namespace mfp2
 		void ButtonRestartClick(object sender, EventArgs e)
 		{
 			pdb = new PBDSystem();
+		}
+		
+		void MainFormLoad(object sender, EventArgs e)
+		{
+			
 		}
 	}
 }

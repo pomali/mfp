@@ -50,7 +50,7 @@ namespace mfp2
 			// 
 			// timerParticleEmitter
 			// 
-			this.timerParticleEmitter.Interval = 5000;
+			this.timerParticleEmitter.Interval = 2000;
 			this.timerParticleEmitter.Tick += new System.EventHandler(this.TimerParticleEmitterTick);
 			// 
 			// buttonStart
@@ -82,6 +82,7 @@ namespace mfp2
 			this.Controls.Add(this.buttonStart);
 			this.Name = "MainForm";
 			this.Text = "mfp2";
+			this.Load += new System.EventHandler(this.MainFormLoad);
 			this.ResumeLayout(false);
 		}
 		private System.Windows.Forms.Button buttonRestart;
