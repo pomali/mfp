@@ -20,7 +20,7 @@ namespace mfp2
 	public partial class MainForm : Form
 	{
 		
-		List<Particle> particles = new List<Particle>();
+		PBDSystem pdb = new PBDSystem();
 		
 		public MainForm()
 		{
@@ -37,13 +37,11 @@ namespace mfp2
 		{
 			base.OnPaint(e);
 			Graphics g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            g.PixelOffsetMode = PixelOffsetMode.Half;
-            foreach (Particle x in particles)
-            {
-            	x.Draw(g);
-            }
+//            g.SmoothingMode = SmoothingMode.AntiAlias;
+//            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+//            g.PixelOffsetMode = PixelOffsetMode.Half;
+        	pdb.Draw(g);
+        	pdb.Update();
 		}
 		
 		void TimerRedrawTick(object sender, EventArgs e)
@@ -53,7 +51,29 @@ namespace mfp2
 		
 		void TimerParticleEmitterTick(object sender, EventArgs e)
 		{
-			particles.Add(new Particle());
+			pdb.Spawn();
+		}
+		
+		void ButtonStartClick(object sender, EventArgs e)
+		{
+			if (timerRedraw.Enabled)
+			{
+				timerParticleEmitter.Enabled = false;
+				timerRedraw.Enabled = false;
+				buttonStart.Text = "Start";
+			}
+			else
+			{
+				timerParticleEmitter.Enabled = true;
+				timerRedraw.Enabled = true;
+				buttonStart.Text = "Stop";
+			}
+
+		}
+		
+		void ButtonRestartClick(object sender, EventArgs e)
+		{
+			pdb = new PBDSystem();
 		}
 	}
 }

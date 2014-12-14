@@ -18,40 +18,44 @@ namespace mfp2
 	/// </summary>
 	public class Particle
 	{
-		double mass = 0.1;
-		Vector4 velocity;
-		public Vector4 position;
-		Vector4 acceleration = new Vector4(0,0.981,0,0);
+		public double mass = 0.01;
+		public Vector4 velocity = new Vector4(0,0,0,0);
+		public Vector4 position = new Vector4(400,80,0,0);
+		public Vector4 acceleration = new Vector4(0,0,0,0);
+		static Vector4 g_acceleration = new Vector4(0,0.981,0,0);
 		bool active = true;
+		Brush brush = Brushes.Blue;
 		
-		public Particle()
+		public Particle( Brush in_brush, int seed = 0)
 		{
-			
-			Random rnd = new Random();
-			velocity = new Vector4(3-(rnd.NextDouble()*6),-3,0,0);
-			position = new Vector4(400,80,0,0);
-			mass = rnd.NextDouble()*10;
+			Random rnd = new Random(seed);
+			//velocity = new Vector4(3-(rnd.NextDouble()*6),-(rnd.NextDouble()*3),0,0);
+			position = new Vector4(400+rnd.Next(-10,10),80+rnd.Next(-10,10),0,0);
+			//mass = rnd.NextDouble();
+			brush = in_brush;
 		}
 		
 		public void Draw(Graphics g)
 		{
-			g.FillEllipse(Brushes.Blue, (float)position.X, (float)position.Y, 3, 3);
-			Update();
+			g.FillEllipse(brush, (float)(position.X-1.5), (float)(position.Y-1.5), 3, 3);
 		}
 		
 		public void Update()
 		{
 			if(active){
-				if (position.X < 760 && position.Y < 560)
+				if (position.X < 760 && position.X > 0 && position.Y < 560 && position.Y > 0)
 				{
 					position += velocity;
-					velocity += mass * acceleration;
+					velocity += mass * (g_acceleration+acceleration);
 				}
 				else
 				{
-					position = new Vector4(Math.Min(position.X,760),Math.Min(position.Y,560), 0,0);
+					position = new Vector4(
+						Math.Max(Math.Min(position.X,760),0),
+						Math.Max(Math.Min(position.Y,560),0),
+						0,0);
 					velocity = new Vector4(0,0,0,0);
-					active = false;
+					//active = false;
 				}
 			}
 		}
