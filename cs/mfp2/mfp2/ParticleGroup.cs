@@ -56,7 +56,7 @@ namespace mfp2
 			
 			if (cb >= 0)
 			{
-				b.q.Y = limit; 
+				b.q.Y = limit;
 			}
 		}
 		
@@ -123,7 +123,7 @@ namespace mfp2
 		
 		public Vector4 velocity
 		{
-			get { 
+			get {
 				double total_mass = 0;
 				Vector4 velocity = new Vector4(0,0,0,0);
 				foreach (Particle p in particles)

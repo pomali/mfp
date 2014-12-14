@@ -37,10 +37,10 @@ namespace mfp2
 		}
 		public void Update()
 		{
-			double dt = 0.1;
-			double kd = 0.001;
-			double lifetime = 50;
-			int ns = 3;
+			double dt = 0.01;
+			double kd = 0.0001;
+			double lifetime = 60;
+			int ns = 30;
 			
 			// 1: Remove old particles
 			List<ParticleGroup> to_remove = new List<ParticleGroup>();
@@ -90,7 +90,7 @@ namespace mfp2
 //            {
 //				foreach(Particle p in x.particles)
 //				{
-//					//p.q = p.position + dt * p.velocity;
+//					p.q = p.position + dt * p.velocity;
 //				}
 //            }
 			
@@ -115,7 +115,6 @@ namespace mfp2
 					p.position = p.q;
 				}
             }
-			
 			
 			//9: apply friction and resistution impulses on velocities
 			//no friction or resistution is needed
