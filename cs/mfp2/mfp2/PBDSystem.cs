@@ -33,7 +33,7 @@ namespace mfp2
 		}
 		public void Update()
 		{
-			double dt = 0.1;
+			double dt = 0.01;
 			double kd = 0.001;
 			//3: external forces
 			foreach (ParticleGroup x in particle_groups)
@@ -64,24 +64,37 @@ namespace mfp2
 				}
             }
 			
-			//6: detect and construct collision constraints
+//			//6: detect and construct collision constraints
 			foreach (ParticleGroup x in particle_groups)
             {
 				foreach(Particle p in x.particles)
 				{
 					p.q = p.position + dt * p.velocity;
-					p.position = p.q;
 				}
             }
 			
 			
 			//7: apply "projection" several times on all constraints
-			for (int i=0; i<30; i++)
+			for (int i=0; i<3; i++)
 			{
-				
+				foreach (ParticleGroup x in particle_groups)
+	            {
+					// DistanceConstraints of springs
+					x.ProjectDistanceConstraints();
+					x.ProjectFloorConstraints();
+	            }
 			}
 			
 			//8: find correct velocities
+			foreach (ParticleGroup x in particle_groups)
+            {
+				foreach(Particle p in x.particles)
+				{
+					p.velocity = (1/dt)*(p.q - p.position);
+					p.position = p.q;
+				}
+            }
+			
 			
 			//9: apply friction and resistution impulses on velocities
 		}

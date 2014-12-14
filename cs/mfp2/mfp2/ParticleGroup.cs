@@ -16,38 +16,73 @@ namespace mfp2
 	/// <summary>
 	/// Description of ParticleGroup.
 	/// </summary>
-	public class ParticleGroup
+	/// 
+	
+	public class ParticlePair
 	{
-		public class ParticlePair
+		public Particle a;
+		public Particle b;
+		public ParticlePair(Particle in1, Particle in2)
 		{
-			Particle a;
-			Particle b;
-			public ParticlePair(Particle in1, Particle in2)
-			{
-				this.a = in1;
-				this.b = in2;
-			}
+			this.a = in1;
+			this.b = in2;
 			
-			public void Draw(Graphics g)
-			{
-				g.DrawLine(Pens.SlateGray, (float)a.position.X, (float)a.position.Y, (float)b.position.X, (float)b.position.Y);
-			}
-			
-			public void Update()
-			{
-				double ks = 0.5;
-				double kd = 0.5;
-				double L = 0;
-				Vector4 c = (a.position - b.position);
-				double distance = c.Length;
-				Vector4 f = - ( ks * (distance - L) )* ( (1/distance) * c );
-				               // + kd/distance * (a.velocity.Length - b.velocity.Length)
-				double total_mass = a.mass + b.mass;
-				a.acceleration += (total_mass/(total_mass-a.mass))*f; //inverse mass * f
-				b.acceleration += (-total_mass/(total_mass-b.mass))*f;
+		}
+		
+		public void Draw(Graphics g)
+		{
+			g.DrawLine(Pens.SlateGray, (float)a.position.X, (float)a.position.Y, (float)b.position.X, (float)b.position.Y);
+		}
+		
+		public void Update()
+		{
+			double ks = 0.5;
+			double kd = 0.5;
+			double L = 0;
+			Vector4 c = (a.position - b.position);
+			double distance = c.Length;
+			Vector4 f = - ( ks * (distance - L) )* ( (1/distance) * c );
+			               // + kd/distance * (a.velocity.Length - b.velocity.Length)
+			double total_mass = a.mass + b.mass;
+			a.acceleration += (total_mass/(total_mass-a.mass))*f; //inverse mass * f
+			b.acceleration += (-total_mass/(total_mass-b.mass))*f;
 
+		}
+		
+		public void ProjectDistanceConstraints()
+		{
+			double L = 25;
+			double s = ((distance - L)/(w_total))/distance;
+			a.q += (-a.w)*s*vect;
+			a.q += (b.w)*s*vect;
+		}
+		
+		public void ProjectFloorConstraints()
+		{
+			// chcem aby bola Y suradnica < 600
+			// teda chcem p1.Y - 600 < 0
+			double limit = 600;
+			double ca = a.q.Y - limit;
+			double cb = b.q.Y - limit;
+			if (ca >= 0)
+			{
+				a.q.Y = limit;
+			}
+			
+			if (cb >= 0)
+			{
+				b.q.Y = limit; 
 			}
 		}
+		
+		double w_total { get { return a.w + b.w;}}
+		Vector4 vect { get { return a.position - b.position;}}
+		double distance { get { return vect.Length;}}
+	}
+
+	public class ParticleGroup
+	{
+		
 		
 		public List<ParticlePair> particle_pairs = new List<ParticlePair>();
 		public List<Particle> particles = new List<Particle>();
@@ -93,6 +128,22 @@ namespace mfp2
 			foreach(ParticlePair p in particle_pairs)
 			{
 				p.Update();
+			}
+		}
+		
+		public void ProjectDistanceConstraints()
+		{
+			foreach(ParticlePair p in particle_pairs)
+			{
+				p.ProjectDistanceConstraints();
+			}
+		}
+		
+		public void ProjectFloorConstraints()
+		{
+			foreach(ParticlePair p in particle_pairs)
+			{
+				p.ProjectFloorConstraints();
 			}
 		}
 		

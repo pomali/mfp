@@ -30,7 +30,7 @@ namespace mfp2
 		public Particle( Brush in_brush, int seed = 0)
 		{
 			Random rnd = new Random(seed);
-			//velocity = new Vector4(3-(rnd.NextDouble()*6),-(rnd.NextDouble()*3),0,0);
+			velocity = new Vector4(3-(rnd.NextDouble()*10),-(rnd.NextDouble()*3),0,0);
 			position = new Vector4(400+rnd.Next(-10,10),80+rnd.Next(-10,10),0,0);
 			//mass = rnd.NextDouble();
 			brush = in_brush;

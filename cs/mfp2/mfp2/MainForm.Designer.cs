@@ -50,7 +50,7 @@ namespace mfp2
 			// 
 			// timerParticleEmitter
 			// 
-			this.timerParticleEmitter.Interval = 1000;
+			this.timerParticleEmitter.Interval = 5000;
 			this.timerParticleEmitter.Tick += new System.EventHandler(this.TimerParticleEmitterTick);
 			// 
 			// buttonStart
