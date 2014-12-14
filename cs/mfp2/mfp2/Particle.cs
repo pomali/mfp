@@ -22,7 +22,8 @@ namespace mfp2
 		public Vector4 velocity = new Vector4(0,0,0,0);
 		public Vector4 position = new Vector4(400,80,0,0);
 		public Vector4 acceleration = new Vector4(0,0,0,0);
-		static Vector4 g_acceleration = new Vector4(0,0.981,0,0);
+		public Vector4 q;
+
 		bool active = true;
 		Brush brush = Brushes.Blue;
 		
@@ -46,7 +47,7 @@ namespace mfp2
 				if (position.X < 760 && position.X > 0 && position.Y < 560 && position.Y > 0)
 				{
 					position += velocity;
-					velocity += mass * (g_acceleration+acceleration);
+					velocity += mass * (acceleration);
 				}
 				else
 				{
@@ -58,6 +59,11 @@ namespace mfp2
 					//active = false;
 				}
 			}
+		}
+		
+		public double w
+		{
+			get { return 1/mass; }
 		}
 		
 	}

@@ -49,8 +49,8 @@ namespace mfp2
 			}
 		}
 		
-		List<ParticlePair> particle_pairs = new List<ParticlePair>();
-		List<Particle> particles = new List<Particle>();
+		public List<ParticlePair> particle_pairs = new List<ParticlePair>();
+		public List<Particle> particles = new List<Particle>();
 		
 		public ParticleGroup()
 		{
@@ -93,6 +93,34 @@ namespace mfp2
 			foreach(ParticlePair p in particle_pairs)
 			{
 				p.Update();
+			}
+		}
+		
+		public Vector4 velocity
+		{
+			get { 
+				double total_mass = 0;
+				Vector4 velocity = new Vector4(0,0,0,0);
+				foreach (Particle p in particles)
+				{
+					velocity += p.mass * p.velocity;
+					total_mass += p.mass;
+				}
+				return (1/total_mass) * velocity;
+			}
+		}
+			
+		public Vector4 position
+		{
+			get { 
+				double total_mass = 0;
+				Vector4 center = new Vector4(0,0,0,0);
+				foreach (Particle p in particles)
+				{
+					center += p.mass * p.position;
+					total_mass += p.mass;
+				}
+				return (1/total_mass) * center;
 			}
 		}
 	}

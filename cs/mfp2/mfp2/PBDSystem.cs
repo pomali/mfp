@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using CG1.Ex02.Mathematics;
 
 namespace mfp2
 {
@@ -18,6 +19,7 @@ namespace mfp2
 	public class PBDSystem
 	{
 		List<ParticleGroup> particle_groups = new List<ParticleGroup>();
+		static Vector4 g_acceleration = new Vector4(0,0.981,0,0);
 		public PBDSystem()
 		{
 		}
@@ -31,10 +33,57 @@ namespace mfp2
 		}
 		public void Update()
 		{
+			double dt = 0.1;
+			double kd = 0.001;
+			//3: external forces
 			foreach (ParticleGroup x in particle_groups)
             {
-				x.Update();
+				foreach(Particle p in x.particles)
+				{
+					p.velocity += dt * p.w * g_acceleration;
+				}
             }
+			
+			//4: damp velocities
+			foreach (ParticleGroup x in particle_groups)
+            {
+				foreach(Particle p in x.particles)
+				{
+					//p.velocity += kd * x.velocity +  - p.velocity;
+					p.velocity -= kd * p.velocity;
+				}
+            }
+			
+			//5: predict positions (simple euler)
+			foreach (ParticleGroup x in particle_groups)
+            {
+				foreach(Particle p in x.particles)
+				{
+					p.q = p.position + dt * p.velocity;
+					p.position = p.q;
+				}
+            }
+			
+			//6: detect and construct collision constraints
+			foreach (ParticleGroup x in particle_groups)
+            {
+				foreach(Particle p in x.particles)
+				{
+					p.q = p.position + dt * p.velocity;
+					p.position = p.q;
+				}
+            }
+			
+			
+			//7: apply "projection" several times on all constraints
+			for (int i=0; i<30; i++)
+			{
+				
+			}
+			
+			//8: find correct velocities
+			
+			//9: apply friction and resistution impulses on velocities
 		}
 		
 		public void Spawn()
