@@ -20,7 +20,7 @@ namespace mfp2
 	public class PBDSystem
 	{
 		List<ParticleGroup> particle_groups = new List<ParticleGroup>();
-		static Vector4 g_acceleration = new Vector4(0,9.81,0,0);
+		static Vector4 g_acceleration = new Vector4(0,.981,0,0);
 		double limit_Y = 500;
 		public PBDSystem()
 		{
@@ -29,7 +29,7 @@ namespace mfp2
 		public void Draw(Graphics g)
 		{
 			foreach (ParticleGroup x in particle_groups)
-            {
+            { 
             	x.Draw(g);
             }
 			
@@ -37,10 +37,11 @@ namespace mfp2
 		}
 		public void Update()
 		{
-			double dt = 0.01;
-			double kd = 0.0001;
-			double lifetime = 60;
-			int ns = 30;
+			double dt = 0.001;
+			double kd = 0.01;
+			double kc = 0.6;
+			double lifetime = 50;
+			int ns = 3;
 			
 			// 1: Remove old particles
 			List<ParticleGroup> to_remove = new List<ParticleGroup>();
@@ -96,12 +97,13 @@ namespace mfp2
 			
 			
 			//7: apply "projection" several times on all constraints
+			double in_k = kc;//Math.Pow(1- (1 - kc), 1.0/ns);
 			for (int i=0; i<ns; i++)
 			{
 				foreach (ParticleGroup x in particle_groups)
 	            {
 					// DistanceConstraints of springs
-					x.ProjectDistanceConstraints();
+					x.ProjectDistanceConstraints(in_k);
 					x.ProjectFloorConstraints(limit_Y);
 	            }
 			}
@@ -111,7 +113,7 @@ namespace mfp2
             {
 				foreach(Particle p in x.particles)
 				{
-					p.velocity = (1/dt)*(p.q - p.position);
+					p.velocity = (1.0/dt)*(p.q - p.position);
 					p.position = p.q;
 				}
             }

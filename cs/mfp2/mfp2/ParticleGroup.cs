@@ -34,12 +34,12 @@ namespace mfp2
 			g.DrawLine(Pens.SlateGray, (float)a.position.X, (float)a.position.Y, (float)b.position.X, (float)b.position.Y);
 		}
 		
-		public void ProjectDistanceConstraints()
+		public void ProjectDistanceConstraints(double in_k)
 		{
 			double L = 15;
-			double s = ((distance - L)/(w_total))/distance;
-			a.q += (-a.w)*s*vect;
-			a.q += (b.w)*s*vect;
+			double s = (distance - L)/distance;
+			a.q += (((-a.w)/(w_total))*s*vect) * in_k;
+			a.q += (((b.w)/(w_total))*s*vect) * in_k;
 		}
 		
 		public void ProjectFloorConstraints(double limit)
@@ -86,7 +86,7 @@ namespace mfp2
 			
 			particle_pairs.Add(new ParticlePair(a,b));
 			particle_pairs.Add(new ParticlePair(b,c));
-			particle_pairs.Add(new ParticlePair(a,c));
+			particle_pairs.Add(new ParticlePair(c,a));
 			born = DateTime.Now;
 		}
 		
@@ -105,11 +105,11 @@ namespace mfp2
 			
 		}
 		
-		public void ProjectDistanceConstraints()
+		public void ProjectDistanceConstraints(double in_k)
 		{
 			foreach(ParticlePair p in particle_pairs)
 			{
-				p.ProjectDistanceConstraints();
+				p.ProjectDistanceConstraints(in_k);
 			}
 		}
 		
