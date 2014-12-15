@@ -26,9 +26,9 @@ namespace mfp2
 		
 		double dt = 1; // krok interpolacie (delta t)
 		double kd = 0.000001;  // velocity damping konstanta, cim vacsie tym viac umieraju rychlosti
-		double kc = 0.5;   // corrections damping konstanta
+		double kc = 0.0000005;   // corrections damping konstanta
 		double lifetime = 50; // particle liftime v sekundach
-		int ns = 30;        // pocet iteracii 
+		int ns = 1000;        // pocet iteracii 
 		double in_k;
 			
 		public PBDSystem()

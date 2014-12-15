@@ -36,7 +36,7 @@ namespace mfp2
 		
 		public void ProjectDistanceConstraints(double in_k)
 		{
-			double L = 5;
+			double L = 8;
 			double s = (distance - L)/distance;
 			a.q += (((-a.w)/(w_total))*s*vect) * in_k;
 			a.q += (((b.w)/(w_total))*s*vect) * in_k;
@@ -67,8 +67,6 @@ namespace mfp2
 
 	public class ParticleGroup
 	{
-		
-		
 		public List<ParticlePair> particle_pairs = new List<ParticlePair>();
 		public List<Particle> particles = new List<Particle>();
 		public DateTime born;
