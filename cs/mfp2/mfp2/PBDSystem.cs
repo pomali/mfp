@@ -107,7 +107,7 @@ namespace mfp2
 				foreach (ParticleGroup x in particle_groups)
 	            {
 					// DistanceConstraints of springs
-					//x.ProjectDistanceConstraints(in_k);
+					x.ProjectDistanceConstraints(in_k);
 					x.ProjectFloorConstraints(limit_Y);
 	            }
 			}
