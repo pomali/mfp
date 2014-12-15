@@ -37,9 +37,9 @@ namespace mfp2
 		}
 		public void Update()
 		{
-			double dt = 0.001;
-			double kd = 0.01;
-			double kc = 0.6;
+			double dt = 0.001; // krok interpolacie (delta t)
+			double kd = 0.01;  // velocity damping konstanta
+			double kc = 0.6;   // 
 			double lifetime = 50;
 			int ns = 3;
 			
@@ -97,7 +97,7 @@ namespace mfp2
 			
 			
 			//7: apply "projection" several times on all constraints
-			double in_k = kc;//Math.Pow(1- (1 - kc), 1.0/ns);
+			double in_k = Math.Pow(1- (1 - kc), 1.0/ns);
 			for (int i=0; i<ns; i++)
 			{
 				foreach (ParticleGroup x in particle_groups)
