@@ -36,7 +36,7 @@ namespace mfp2
 		
 		public void ProjectDistanceConstraints(double in_k)
 		{
-			double L = 15;
+			double L = 5;
 			double s = (distance - L)/distance;
 			a.q += (((-a.w)/(w_total))*s*vect) * in_k;
 			a.q += (((b.w)/(w_total))*s*vect) * in_k;
