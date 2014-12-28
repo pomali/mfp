@@ -36,13 +36,13 @@ namespace mfp2
 		
 		public void ProjectDistanceConstraints(double in_k)
 		{
-			double L = 8;
+			double L = 50;
 			double s = (distance - L)/distance;
 			a.q += (((-a.w)/(w_total))*s*vect) * in_k;
-			a.q += (((b.w)/(w_total))*s*vect) * in_k;
+			b.q += (((b.w)/(w_total))*s*vect) * in_k;
 		}
 		
-		public void ProjectFloorConstraints(double limit)
+		public void ProjectFloorConstraints(double limit, double in_k)
 		{
 			// chcem aby bola Y suradnica < limit
 			// teda chcem p1.Y - limit < 0
@@ -51,12 +51,12 @@ namespace mfp2
 			double cb = b.q.Y - limit;
 			if (ca >= 0)
 			{
-				a.q.Y = limit;
+				a.q.Y = a.q.Y - ca*in_k;
 			}
 			
 			if (cb >= 0)
 			{
-				b.q.Y = limit;
+				b.q.Y = b.q.Y - cb*in_k;
 			}
 		}
 		
@@ -111,11 +111,11 @@ namespace mfp2
 			}
 		}
 		
-		public void ProjectFloorConstraints(double limit)
+		public void ProjectFloorConstraints(double limit, double in_k)
 		{
 			foreach(ParticlePair p in particle_pairs)
 			{
-				p.ProjectFloorConstraints(limit);
+				p.ProjectFloorConstraints(limit, in_k);
 			}
 		}
 		

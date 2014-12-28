@@ -24,12 +24,13 @@ namespace mfp2
 		double limit_Y = 500;
 		
 		
-		double dt = 1; // krok interpolacie (delta t)
-		double kd = 0.000001;  // velocity damping konstanta, cim vacsie tym viac umieraju rychlosti
-		double kc = 0.0000005;   // corrections damping konstanta
+		double dt = 0.001; // krok interpolacie (delta t)
+		double kd = 0.01;  // velocity damping konstanta, cim vacsie tym viac umieraju rychlosti
+		double kc = 0.8;   // corrections damping konstanta
 		double lifetime = 50; // particle liftime v sekundach
-		int ns = 1000;        // pocet iteracii 
-		double in_k;
+		int ns = 1;        // pocet iteracii 
+		
+		double in_k; // vypocitavany damping
 			
 		public PBDSystem()
 		{
@@ -82,7 +83,7 @@ namespace mfp2
 				}
             }
 			
-			//5: predict positions (simple euler)
+			//5: predict positions (simple explicit euler)
 			foreach (ParticleGroup x in particle_groups)
             {
 				foreach(Particle p in x.particles)
@@ -96,7 +97,6 @@ namespace mfp2
 //            {
 //				foreach(Particle p in x.particles)
 //				{
-//					p.q = p.position + dt * p.velocity;
 //				}
 //            }
 			
@@ -108,10 +108,10 @@ namespace mfp2
 	            {
 					// DistanceConstraints of springs
 					x.ProjectDistanceConstraints(in_k);
-					x.ProjectFloorConstraints(limit_Y);
+					x.ProjectFloorConstraints(limit_Y, in_k);
 	            }
 			}
-			
+//			
 			//8: find correct velocities
 			foreach (ParticleGroup x in particle_groups)
             {
