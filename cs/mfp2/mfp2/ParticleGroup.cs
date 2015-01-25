@@ -105,28 +105,28 @@ namespace mfp2
 			 cb = -b.q.X;
 			if (ca >= 1)
 			{
-				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
+				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.X - a.q.X)));
 			}
 			
 			if (cb >= 1)
 			{
-				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
+				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.X - b.q.X)));
 				//b.q.Y = b.q.Y - cb - 1;
 			}
 			
-//			//X sprava
-//			 ca = a.q.X-limitX;
-//			 cb = b.q.X-limitX;
-//			if (ca >= 1)
-//			{
-//				 a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
-//			}
-//			
-//			if (cb >= 1)
-//			{
-//				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
-//				//b.q.Y = b.q.Y - cb - 1;
-//			}
+			//X sprava
+			 ca = a.q.X-limitX;
+			 cb = b.q.X-limitX;
+			if (ca >= 1)
+			{
+				 a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.X - a.q.X)));
+			}
+			
+			if (cb >= 1)
+			{
+				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.X - b.q.X)));
+				//b.q.Y = b.q.Y - cb - 1;
+			}
 			
 		}
 		
@@ -286,8 +286,8 @@ namespace mfp2
 			
 			//throw new NotImplementedException();
 			Vector4 line = line_p1 - line_p2;
-			Vector4 cp1 = line % (p1 - line_p1); //cross product FIXME
-			Vector4 cp2 = line % (p2 - line_p1); //cross product FIXME
+			Vector4 cp1 = line % (p1 - line_p1); //cross product FIXME?
+			Vector4 cp2 = line % (p2 - line_p1); //cross product FIXME?
 			return (cp1 * cp2 > 0); //dot product - do cp point in same direction?
 			
 			
@@ -406,9 +406,9 @@ namespace mfp2
 				{
 						return; // lines are collinear or parallel
 				}
-				double u =  u0/ rs;
+				double u =  u0/rs;
 				double t = t0/rs;
-				if (u <= 0 || 1 <= u || t <= 0 || 1 <= t)
+				if (u < 0 || 1 < u || t < 0 || 1 < t)
 				{
 					//return; //lines do not intersect
 				}
@@ -431,9 +431,9 @@ namespace mfp2
 				double total_w = p.w + a.w + b.w;
 				
 				delta_p = (line_intersection-p.q);
-				p.q += delta_p;
-				a.q += -1*delta_p;
-				b.q += -1*delta_p;
+				p.q += (p.w/total_w)*delta_p;
+				a.q += -1*(a.w/total_w)*delta_p;
+				b.q += -1*(b.w/total_w)*delta_p;
 			}
 
 		}

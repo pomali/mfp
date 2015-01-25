@@ -32,7 +32,7 @@ namespace mfp2
 	public class PBDSystem
 	{
 		List<ParticleGroup> particle_groups = new List<ParticleGroup>();
-		static Vector4 g_acceleration = new Vector4(0,9.81,0,0); // gravitacne zrychlenie
+		static Vector4 g_acceleration = new Vector4(0,981000,0,0); // gravitacne zrychlenie
 		static int system_step_mod = (int)1e6;
 		static int particle_spawn_mod = 40;
 		public double limit_Y = 550; // "vyska" podlahy
@@ -41,11 +41,11 @@ namespace mfp2
 		public int lifetime = 350; // particle liftime v krokoch systemu
 		public bool draw_aabb = true;
 		
-		public double dt = 3e-6; // krok interpolacie (delta t)
-		public double kd = 0.99;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
+		public double dt = 3e-10; // krok interpolacie (delta t)
+		public double kd = 0.99999;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
 		public int spring_size = 80; // dlzka springu ktory spawnujeme
 
-		double _kc = 0.9;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
+		double _kc = 0.99999;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
 		public double kc { // corrections damping
 			get { return _kc; }
 			set { _kc = value; refresh_in_k();}
@@ -175,9 +175,9 @@ namespace mfp2
 				{
 					c.pg.ProjectCollisionConstraint(c.p);
 				}
-				
 			}
-//			
+			
+			
 			//8: find correct velocities
 			foreach (ParticleGroup x in particle_groups)
             {

@@ -156,5 +156,11 @@ namespace mfp2
 			pbd.limit_X = Size.Width;
 			pbd.limit_Y = Size.Height-60;
 		}
+		
+		void MainFormSizeChanged(object sender, EventArgs e)
+		{
+			pbd.limit_X = Size.Width;
+			pbd.limit_Y = Size.Height-60;
+		}
 	}
 }

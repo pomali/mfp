@@ -368,6 +368,7 @@ namespace mfp2
 			this.Text = "mfp2";
 			this.Load += new System.EventHandler(this.MainFormLoad);
 			this.ResizeEnd += new System.EventHandler(this.MainFormResizeEnd);
+			this.SizeChanged += new System.EventHandler(this.MainFormSizeChanged);
 			this.Click += new System.EventHandler(this.MainFormClick);
 			this.panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.num_kc)).EndInit();
