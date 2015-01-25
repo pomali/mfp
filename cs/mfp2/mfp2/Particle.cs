@@ -20,7 +20,7 @@ namespace mfp2
 		public double mass = 10000;
 		public double mass_base = 10000; 
 		public Vector4 velocity = new Vector4(0	,0,0,0);
-		public Vector4 position = new Vector4(400,80,0,0);
+		public Vector4 position = new Vector4(400,80,1,1);
 		public Vector4 acceleration = new Vector4(0,0,0,0);
 		public Vector4 q; // pozicia pocas medzivypoctov
 		
@@ -30,7 +30,7 @@ namespace mfp2
 		{
 			Random rnd = new Random(seed);
 			velocity = new Vector4(3-(rnd.NextDouble()*6),-3,0,0);
-			position = new Vector4(400+rnd.Next(-10,10),80+rnd.Next(-10,10),0,0);
+			position = new Vector4(400+rnd.Next(-10,10),80+rnd.Next(-10,10),1,1);
 			mass = (rnd.NextDouble()*100+1)*mass_base;
 			brush = in_brush;
 		}

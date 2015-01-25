@@ -35,7 +35,7 @@ namespace mfp2
 		static Vector4 g_acceleration = new Vector4(0,9.81,0,0); // gravitacne zrychlenie
 		static int system_step_mod = (int)1e6;
 		static int particle_spawn_mod = 50;
-		double limit_Y = 600; // "vyska" podlahy
+		double limit_Y = 550; // "vyska" podlahy
 		int system_step = 0; // aktualny krok systemu (modulo system_step_mod kvoli citatelnosti a podobne)
 		public int lifetime = 350; // particle liftime v krokoch systemu
 		public bool draw_aabb = true;
@@ -143,7 +143,6 @@ namespace mfp2
 			//6: detect and construct collision constraints
 			foreach (ParticleGroup pg1 in particle_groups)
             {
-				
 				AABBox aabb = pg1.aabb();
 				foreach(ParticleGroup pg2 in particle_groups)
 				{

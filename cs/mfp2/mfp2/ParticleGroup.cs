@@ -55,7 +55,7 @@ namespace mfp2
 		
 		public void ProjectDistanceConstraints(double in_k)
 		{
-			double k = 1.4;
+			double k = 1;
 			double s = (distance - L)/distance;
 			a.q += (((-a.w)/(w_total))*s*vect) * in_k * k;
 			b.q += (((b.w)/(w_total))*s*vect) * in_k * k;
@@ -90,6 +90,7 @@ namespace mfp2
 	{
 		public List<ParticlePair> particle_pairs = new List<ParticlePair>();
 		public List<Particle> particles = new List<Particle>();
+		public Vector4 intersection = new Vector4(), collision_normal = new Vector4();
 		public int born;
 		public Random rnd;
 		public double size; //dlzka jedneho paru aspon na teraz
@@ -117,6 +118,10 @@ namespace mfp2
 			{
 				p.Draw(g);
 			}
+			
+			g.DrawRectangle(Pens.CadetBlue, (float)intersection.X-2, (float)intersection.Y-2, 4 , 4);
+			Vector4 v  = intersection + collision_normal;
+			g.DrawLine(Pens.CadetBlue, (float)intersection.X, (float)intersection.Y, (float)v.X, (float)v.Y);
 			
 		}
 		
@@ -171,7 +176,7 @@ namespace mfp2
 		{
 			get { 
 				double total_mass = 0;
-				Vector4 center = new Vector4(0,0,0,0);
+				Vector4 center = new Vector4(0,0,1,1);
 				foreach (Particle p in particles)
 				{
 					center += p.mass * p.position;
@@ -201,10 +206,14 @@ namespace mfp2
 		
 		public bool SameSideOfLine(Vector4 p1, Vector4 p2, Vector4 line_p1, Vector4 line_p2)
 		{
+			
+			//throw new NotImplementedException();
 			Vector4 line = line_p1 - line_p2;
-			Vector4 cp1 = line % (p1 - line_p1); //cross product
-			Vector4 cp2 = line % (p2 - line_p1); //cross product 
+			Vector4 cp1 = line % (p1 - line_p1); //cross product FIXME
+			Vector4 cp2 = line % (p2 - line_p1); //cross product FIXME
 			return (cp1 * cp2 > 0); //dot product - do cp point in same direction?
+			
+			
 		}
 	}
 	
@@ -214,11 +223,11 @@ namespace mfp2
 		{
 			Particle a;
 			a = AddParticle(Brushes.Blue, rnd.Next() + 1);
-			a.position = new Vector4(400,80,0,0);
+			a.position = new Vector4(400,80,1,1);
 			a = AddParticle(Brushes.Red, rnd.Next() + 2);
-			a.position = new Vector4(400,50,0,0);
+			a.position = new Vector4(400,50,1,1);
 			a = AddParticle(Brushes.Green, rnd.Next() + 3);
-			a.position = new Vector4(430,80,0,0);
+			a.position = new Vector4(430,80,1,1);
 
 			AddPair(0,1);
 			AddPair(1,2);
@@ -227,9 +236,28 @@ namespace mfp2
 		
 		public bool is_inside(Vector4 p)
 		{
-			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
-				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
-				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
+//			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
+//				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
+//				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
+			
+			
+			Vector4 v0 = particles[1].q - particles[0].q;
+			Vector4 v1 = particles[2].q - particles[0].q;
+			Vector4 v2 = p - particles[0].q;
+			
+			double dot00 = v0*v0;
+			double dot01 = v0*v1;
+			double dot02 = v0*v2;
+			double dot11 = v1*v1;
+			double dot12 = v1*v2;
+			
+			// Compute barycentric coordinates
+			double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+			double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+			double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+			
+			// Check if point is in triangle
+			return (u >= 0) && (v >= 0) && (u + v < 1);
 		}
 		
 		
@@ -275,7 +303,10 @@ namespace mfp2
 					foreach(var ot in pairs)
 					{
 						Vector4 line = ot.Target.q - ot.Origin.q;
-						double displacement_len = (((p.q - ot.Origin.q)*line.unit_vector()*line.unit_vector())-line).Length;
+						Vector4 displacement = ((((p.q - ot.Origin.q)*line.unit_vector())*line.unit_vector())-line);
+						if (displacement.W != 0 || displacement.Z != 0)
+							throw new NotImplementedException();
+						double displacement_len = displacement.Length;
 						
 						if (displacement_len<prev_min)
 						{
@@ -288,12 +319,34 @@ namespace mfp2
 				if (a == null)
 				{throw new NotImplementedException();}
 				
-				Vector4 l = (a.q - b.q);
-				line_intersection = l % (p.position-p.q);
-				line_normal = l.normal_2d();
+				Vector4 r = (a.q - b.q);
+				Vector4 s = (p.position - p.q);
+				Vector4 l = (p.q-b.q);
+				double u0 = (l.X*r.Y - r.X*l.Y);
+				double t0 = (l.X*s.Y - s.X*l.Y);
+				double rs = (r.X * s.Y - s.X * r.Y);
+				if (rs==0)
+				{
+						return; // lines are collinear or parallel
+				}
+				double u =  u0/ rs;
+				double t = t0/rs;
+				if (u < 0 || 1 < u || t < 0 || 1 < t)
+				{
+					return; //lines do not intersect
+				}
+				line_intersection = p.q + u*s;
+				line_normal = r.normal_2d();
+				collision_normal = line_normal;
+				intersection = line_intersection;
 				
-				Vector4 gradient = p.q ^ line_normal;
-				Vector4 delta_p = -(((p.q - line_intersection)*line_normal)/(gradient * gradient)) * gradient *2.1;
+				Vector4 gradient = (p.q) ^ line_normal;
+				
+				Vector4 mv1 = (p.q - line_intersection);
+				double mv2 = (mv1*line_normal);
+				double mv3 = (gradient * gradient);
+				double mv4 = (mv2/mv3);
+				Vector4 delta_p = - mv4* gradient;
 				double total_w = p.w + a.w + b.w;
 				p.q += delta_p*(p.w/total_w);
 				a.q += -(a.w/total_w)*delta_p;
@@ -322,7 +375,7 @@ namespace mfp2
 			AddPair(1,3, uhlopriecka);
 		}
 		
-		public void ProjectCollisionConstraint(Particle p)
+		public override void ProjectCollisionConstraint(Particle p)
 		{
 			throw new NotImplementedException();
 		}
