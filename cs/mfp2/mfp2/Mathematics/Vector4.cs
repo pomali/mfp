@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CG1.Ex02.Mathematics
+namespace mfp2
 {
 	public struct Vector4
 	{
@@ -92,6 +92,16 @@ namespace CG1.Ex02.Mathematics
         public static Vector4 operator ^(Vector4 a, Vector4 b)
         {
             return new Vector4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
+        }
+        
+        public Vector4 normal_2d()
+        {
+        	return new Vector4(-Y,X,Z,W);
+        }
+        
+        public Vector4 unit_vector()
+        {
+        	return (1/Length)*this;
         }
 
         #endregion

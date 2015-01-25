@@ -9,7 +9,6 @@
 using System;
 using System.Drawing;
 using System.Runtime.Remoting.Channels;
-using CG1.Ex02.Mathematics;
 
 namespace mfp2
 {
@@ -20,7 +19,7 @@ namespace mfp2
 	{
 		public double mass = 10000;
 		public double mass_base = 10000; 
-		public Vector4 velocity = new Vector4(0,0,0,0);
+		public Vector4 velocity = new Vector4(0	,0,0,0);
 		public Vector4 position = new Vector4(400,80,0,0);
 		public Vector4 acceleration = new Vector4(0,0,0,0);
 		public Vector4 q; // pozicia pocas medzivypoctov
@@ -30,9 +29,9 @@ namespace mfp2
 		public Particle( Brush in_brush, int seed = 0)
 		{
 			Random rnd = new Random(seed);
-			//velocity = new Vector4(3-(rnd.NextDouble()*6),-3,0,0);
+			velocity = new Vector4(3-(rnd.NextDouble()*6),-3,0,0);
 			position = new Vector4(400+rnd.Next(-10,10),80+rnd.Next(-10,10),0,0);
-			//mass = (rnd.NextDouble()*100+1)*mass_base;
+			mass = (rnd.NextDouble()*100+1)*mass_base;
 			brush = in_brush;
 		}
 		
@@ -48,9 +47,9 @@ namespace mfp2
 		public void Draw(Graphics g)
 		{
 			CheckPosition();
-			g.FillEllipse(brush, (float)(position.X-1.5), (float)(position.Y-1.5), 3, 3);
+			float r = (float)(2+((mass/mass_base)/10));
+			g.FillEllipse(brush, (float)(position.X-(r/2)), (float)(position.Y-(r/2)), r, r);
 		}
-		
 		
 		public double w
 		{

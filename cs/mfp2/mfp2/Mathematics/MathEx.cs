@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CG1.Ex02.Mathematics
+namespace mfp2
 {
 	public static class MathEx
 	{

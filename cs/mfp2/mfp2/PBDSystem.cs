@@ -1,6 +1,6 @@
 ﻿/*
  * Created by SharpDevelop.
- * User: karci
+ * User: pom
  * Date: 12/14/2014
  * Time: 4:11 PM
  * 
@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using CG1.Ex02.Mathematics;
 
 namespace mfp2
 {
@@ -17,24 +16,62 @@ namespace mfp2
 	/// Description of PBDSystem.
 	/// http://matthias-mueller-fischer.ch/publications/posBasedDyn.pdf
 	/// </summary>
+	/// 
+	
+	public struct CollisionPair
+	{
+		public Particle p;
+		public ParticleGroup pg;
+		public CollisionPair(Particle in_p, ParticleGroup in_pg)
+		{
+			p = in_p;
+			pg = in_pg;
+		}
+	}
+	
 	public class PBDSystem
 	{
 		List<ParticleGroup> particle_groups = new List<ParticleGroup>();
-		static Vector4 g_acceleration = new Vector4(0,9.81,0,0);
-		double limit_Y = 500;
+		static Vector4 g_acceleration = new Vector4(0,9.81,0,0); // gravitacne zrychlenie
+		static int system_step_mod = (int)1e6;
+		static int particle_spawn_mod = 50;
+		double limit_Y = 600; // "vyska" podlahy
+		int system_step = 0; // aktualny krok systemu (modulo system_step_mod kvoli citatelnosti a podobne)
+		public int lifetime = 350; // particle liftime v krokoch systemu
+		public bool draw_aabb = true;
 		
+		public double dt = 3e-4; // krok interpolacie (delta t)
+		public double kd = 0.99;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
+		public int spring_size = 60; // dlzka springu ktory spawnujeme
+
+		double _kc = 0.9;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
+		public double kc { // corrections damping
+			get { return _kc; }
+			set { _kc = value; refresh_in_k();}
+		}
+
+
+		int _ns = 5;        // pocet iteracii 
+		public int ns { // pocet iteracii
+			get { return _ns; }
+			set { _ns = value; refresh_in_k();}
+		}
 		
-		double dt = 0.001; // krok interpolacie (delta t)
-		double kd = 0.01;  // velocity damping konstanta, cim vacsie tym viac umieraju rychlosti
-		double kc = 0.8;   // corrections damping konstanta
-		double lifetime = 50; // particle liftime v sekundach
-		int ns = 1;        // pocet iteracii 
+		public int System_step {
+			get { return system_step; }
+		}
+		
 		
 		double in_k; // vypocitavany damping
 			
 		public PBDSystem()
 		{
-			in_k = Math.Pow(1.0 - (1.0 - kc), 1.0/ns);
+			refresh_in_k();
+		}
+		
+		void refresh_in_k()
+		{	
+			in_k = 1.0 -  Math.Pow((1.0 - kc), 1.0/ns);	
 		}
 		
 		public void Draw(Graphics g)
@@ -42,18 +79,28 @@ namespace mfp2
 			foreach (ParticleGroup x in particle_groups)
             { 
             	x.Draw(g);
+            	
+            	if (draw_aabb){
+					AABBox a = x.aabb();
+					g.DrawRectangle(Pens.BurlyWood, (float)a.x1, (float)a.y1, (float)(a.x2-a.x1), (float)(a.y2-a.y1));
+            	}
             }
 			
 			g.DrawLine(Pens.Black,0,(float)limit_Y,g.VisibleClipBounds.Width,(float)limit_Y);
 		}
 		public void Update()
 		{
+			system_step = (system_step + 1) % system_step_mod;
+			
+			if (system_step % particle_spawn_mod == 1){
+				Spawn(spring_size);
+			}
 			
 			// 1: Remove old particles
 			List<ParticleGroup> to_remove = new List<ParticleGroup>();
 			foreach (ParticleGroup x in particle_groups)
             {
-				if (x.born < DateTime.Now.AddSeconds(-lifetime))
+				if (Math.Abs((System_step - x.born)%system_step_mod) > lifetime)
 				{
 					to_remove.Add(x);
 				}
@@ -79,7 +126,7 @@ namespace mfp2
 				foreach(Particle p in x.particles)
 				{
 					//p.velocity += kd * x.velocity +  - p.velocity;
-					p.velocity -= kd * p.velocity;
+					p.velocity = kd * p.velocity;
 				}
             }
 			
@@ -92,13 +139,26 @@ namespace mfp2
 				}
             }
 			
-//			//6: detect and construct collision constraints
-//			foreach (ParticleGroup x in particle_groups)
-//            {
-//				foreach(Particle p in x.particles)
-//				{
-//				}
-//            }
+			List<CollisionPair> collisions = new List<CollisionPair>();
+			//6: detect and construct collision constraints
+			foreach (ParticleGroup pg1 in particle_groups)
+            {
+				
+				AABBox aabb = pg1.aabb();
+				foreach(ParticleGroup pg2 in particle_groups)
+				{
+					if (pg1!=pg2)
+					{
+						foreach(Particle p in pg2.particles)
+						{
+							if (aabb.is_inside(p.q))
+							{
+								collisions.Add(new CollisionPair(p,pg1));
+							}
+						}
+					}
+				}
+            }
 			
 			
 			//7: apply "projection" several times on all constraints
@@ -110,6 +170,12 @@ namespace mfp2
 					x.ProjectDistanceConstraints(in_k);
 					x.ProjectFloorConstraints(limit_Y, in_k);
 	            }
+				
+				foreach(CollisionPair c in collisions)
+				{
+					c.pg.ProjectCollisionConstraint(c.p);
+				}
+				
 			}
 //			
 			//8: find correct velocities
@@ -126,9 +192,9 @@ namespace mfp2
 			//no friction or resistution is needed
 		}
 		
-		public void Spawn()
+		public void Spawn(double size)
 		{
-			particle_groups.Add(new ParticleGroup());
+			particle_groups.Add(new ParticleGroupTriangle(size, System_step));
 		}
 	}
 }
