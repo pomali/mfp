@@ -34,15 +34,16 @@ namespace mfp2
 		List<ParticleGroup> particle_groups = new List<ParticleGroup>();
 		static Vector4 g_acceleration = new Vector4(0,9.81,0,0); // gravitacne zrychlenie
 		static int system_step_mod = (int)1e6;
-		static int particle_spawn_mod = 50;
-		double limit_Y = 550; // "vyska" podlahy
+		static int particle_spawn_mod = 40;
+		public double limit_Y = 550; // "vyska" podlahy
+		public double limit_X = 550; // "sirka"
 		int system_step = 0; // aktualny krok systemu (modulo system_step_mod kvoli citatelnosti a podobne)
 		public int lifetime = 350; // particle liftime v krokoch systemu
 		public bool draw_aabb = true;
 		
-		public double dt = 3e-4; // krok interpolacie (delta t)
+		public double dt = 3e-6; // krok interpolacie (delta t)
 		public double kd = 0.99;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
-		public int spring_size = 60; // dlzka springu ktory spawnujeme
+		public int spring_size = 80; // dlzka springu ktory spawnujeme
 
 		double _kc = 0.9;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
 		public double kc { // corrections damping
@@ -51,7 +52,7 @@ namespace mfp2
 		}
 
 
-		int _ns = 5;        // pocet iteracii 
+		int _ns = 1;        // pocet iteracii 
 		public int ns { // pocet iteracii
 			get { return _ns; }
 			set { _ns = value; refresh_in_k();}
@@ -167,7 +168,7 @@ namespace mfp2
 	            {
 					// DistanceConstraints of springs
 					x.ProjectDistanceConstraints(in_k);
-					x.ProjectFloorConstraints(limit_Y, in_k);
+					x.ProjectFloorConstraints(limit_X, limit_Y, in_k);
 	            }
 				
 				foreach(CollisionPair c in collisions)

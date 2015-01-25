@@ -49,8 +49,9 @@ namespace mfp2
 		
 		void TimerRedrawTick(object sender, EventArgs e)
 		{
+						pbd.Update(); //ked chces zabavu tak to daj do onpaint a resizuj
 			this.Invalidate();
-			pbd.Update(); //ked chces zabavu tak to daj do onpaint a resizuj
+
 		}
 		
 		void ButtonStartClick(object sender, EventArgs e)
@@ -79,6 +80,9 @@ namespace mfp2
 			num_ttl.Value = pbd.lifetime;
 			num_solit.Value = (decimal) pbd.ns;
 			cb_aabb.Checked = pbd.draw_aabb;
+			num_size.Value = (decimal) pbd.spring_size;
+			pbd.limit_X = Size.Width;
+			pbd.limit_Y = Size.Height-60;
 			
 			lbl_dt.Text = lbl_dt.Tag + ": " + pbd.dt.ToString();
 		}
@@ -145,6 +149,12 @@ namespace mfp2
 		void MainFormClick(object sender, EventArgs e)
 		{
 
+		}
+		
+		void MainFormResizeEnd(object sender, EventArgs e)
+		{
+			pbd.limit_X = Size.Width;
+			pbd.limit_Y = Size.Height-60;
 		}
 	}
 }

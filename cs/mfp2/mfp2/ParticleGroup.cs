@@ -32,7 +32,7 @@ namespace mfp2
 		
 		public bool is_inside(Vector4 p)
 		{
-			return x1 < p.X && p.X < x2 && y1 < p.Y && p.Y < y2;
+			return x1 <= p.X && p.X <= x2 && y1 <= p.Y && p.Y <= y2;
 		}
 	}
 	
@@ -48,9 +48,15 @@ namespace mfp2
 			this.L = inL;
 		}
 		
+		
 		public void Draw(Graphics g)
 		{
-			g.DrawLine(Pens.SlateGray, (float)a.position.X, (float)a.position.Y, (float)b.position.X, (float)b.position.Y);
+			Draw(g,Pens.SlateGray);
+		}
+		
+		public void Draw(Graphics g, Pen p)
+		{
+			g.DrawLine(p, (float)a.position.X, (float)a.position.Y, (float)b.position.X, (float)b.position.Y);
 		}
 		
 		public void ProjectDistanceConstraints(double in_k)
@@ -61,13 +67,14 @@ namespace mfp2
 			b.q += (((b.w)/(w_total))*s*vect) * in_k * k;
 		}
 		
-		public void ProjectFloorConstraints(double limit, double in_k)
+		public void ProjectFloorConstraints(double limitX, double limitY, double in_k)
 		{
 			// chcem aby bola Y suradnica < limit (top je 0)
 			// teda chcem p1.Y - limit < 0
 
-			double ca = a.q.Y - limit;
-			double cb = b.q.Y - limit;
+			//Y zdola
+			double ca = a.q.Y - limitY;
+			double cb = b.q.Y - limitY;
 			if (ca >= 1)
 			{
 				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
@@ -78,6 +85,49 @@ namespace mfp2
 				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
 				//b.q.Y = b.q.Y - cb - 1;
 			}
+			
+			//Y zhora
+			 ca = -a.q.Y;
+			 cb = -b.q.Y;
+			if (ca >= 1)
+			{
+				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
+			}
+			
+			if (cb >= 1)
+			{
+				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
+				//b.q.Y = b.q.Y - cb - 1;
+			}
+			
+			//X zlava
+			 ca = -a.q.X;
+			 cb = -b.q.X;
+			if (ca >= 1)
+			{
+				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
+			}
+			
+			if (cb >= 1)
+			{
+				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
+				//b.q.Y = b.q.Y - cb - 1;
+			}
+			
+//			//X sprava
+//			 ca = a.q.X-limitX;
+//			 cb = b.q.X-limitX;
+//			if (ca >= 1)
+//			{
+//				 a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
+//			}
+//			
+//			if (cb >= 1)
+//			{
+//				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
+//				//b.q.Y = b.q.Y - cb - 1;
+//			}
+			
 		}
 		
 		double mass_total { get { return a.mass + b.mass;}}
@@ -90,10 +140,15 @@ namespace mfp2
 	{
 		public List<ParticlePair> particle_pairs = new List<ParticlePair>();
 		public List<Particle> particles = new List<Particle>();
-		public Vector4 intersection = new Vector4(), collision_normal = new Vector4();
 		public int born;
 		public Random rnd;
 		public double size; //dlzka jedneho paru aspon na teraz
+		
+		// Vykrelsovacie pomocne veci
+		public List<Vector4> intersections = new List<Vector4>();
+		public List<Vector4> collision_normals = new List<Vector4>();
+		public List<Vector4> collision_vectors = new List<Vector4>();
+		public bool colliding;
 		
 		public ParticleGroup(double in_size, int system_step)
 		{
@@ -116,13 +171,35 @@ namespace mfp2
 			
 			foreach (ParticlePair p in particle_pairs)
 			{
-				p.Draw(g);
+				if (colliding)
+				{
+					p.Draw(g,Pens.Red);
+				}
+				else{
+					p.Draw(g);
+				}
 			}
 			
-			g.DrawRectangle(Pens.CadetBlue, (float)intersection.X-2, (float)intersection.Y-2, 4 , 4);
-			Vector4 v  = intersection + collision_normal;
-			g.DrawLine(Pens.CadetBlue, (float)intersection.X, (float)intersection.Y, (float)v.X, (float)v.Y);
 			
+			var ic = intersections.Zip(collision_normals, (i, n) => new { Intersection = i, CNormal = n});
+			foreach(var k in ic){
+				Vector4 intersection = k.Intersection;
+				g.DrawRectangle(Pens.CadetBlue, (float)intersection.X-2, (float)intersection.Y-2, 4 , 4);
+				Vector4 v  = intersection + k.CNormal;
+				g.DrawLine(Pens.CadetBlue, (float)intersection.X, (float)intersection.Y, (float)v.X, (float)v.Y);
+			}
+			
+			ic = intersections.Zip(collision_vectors, (i, n) => new { Intersection = i, CNormal = n});
+			foreach(var k in ic){
+				Vector4 intersection = k.Intersection;
+				Vector4 v  = intersection + k.CNormal;
+				g.DrawLine(Pens.Cyan, (float)intersection.X, (float)intersection.Y, (float)v.X, (float)v.Y);
+			}
+			
+			intersections.Clear();
+			collision_normals.Clear();
+			collision_vectors.Clear();
+			colliding = false;
 		}
 		
 		public void ProjectDistanceConstraints(double in_k)
@@ -133,11 +210,11 @@ namespace mfp2
 			}
 		}
 		
-		public void ProjectFloorConstraints(double limit, double in_k)
+		public void ProjectFloorConstraints(double limitX, double limitY, double in_k)
 		{
 			foreach(ParticlePair p in particle_pairs)
 			{
-				p.ProjectFloorConstraints(limit, in_k);
+				p.ProjectFloorConstraints(limitX, limitY, in_k);
 			}
 		}
 		
@@ -236,28 +313,28 @@ namespace mfp2
 		
 		public bool is_inside(Vector4 p)
 		{
-//			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
-//				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
-//				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
+			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
+				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
+				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
 			
-			
-			Vector4 v0 = particles[1].q - particles[0].q;
-			Vector4 v1 = particles[2].q - particles[0].q;
-			Vector4 v2 = p - particles[0].q;
-			
-			double dot00 = v0*v0;
-			double dot01 = v0*v1;
-			double dot02 = v0*v2;
-			double dot11 = v1*v1;
-			double dot12 = v1*v2;
-			
-			// Compute barycentric coordinates
-			double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-			double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-			double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-			
-			// Check if point is in triangle
-			return (u >= 0) && (v >= 0) && (u + v < 1);
+//			
+//			Vector4 v0 = particles[1].q - particles[0].q;
+//			Vector4 v1 = particles[2].q - particles[0].q;
+//			Vector4 v2 = p - particles[0].q;
+//			
+//			double dot00 = v0*v0;
+//			double dot01 = v0*v1;
+//			double dot02 = v0*v2;
+//			double dot11 = v1*v1;
+//			double dot12 = v1*v2;
+//			
+//			// Compute barycentric coordinates
+//			double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+//			double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+//			double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+//			
+//			// Check if point is in triangle
+//			return (u >= 0) && (v >= 0) && ( 1 - (u + v) >= 0);
 		}
 		
 		
@@ -265,7 +342,7 @@ namespace mfp2
 		{
 			if (is_inside(p.q)) //ak je q vnutri trojuholniku
 			{
-				
+				colliding = true;
 				Vector4 line_normal;
 				Vector4 line_intersection;
 				Particle a = null, b = null;
@@ -303,7 +380,7 @@ namespace mfp2
 					foreach(var ot in pairs)
 					{
 						Vector4 line = ot.Target.q - ot.Origin.q;
-						Vector4 displacement = ((((p.q - ot.Origin.q)*line.unit_vector())*line.unit_vector())-line);
+						 Vector4 displacement = ((((p.q - ot.Origin.q)*line.unit_vector())*line.unit_vector())-line);
 						if (displacement.W != 0 || displacement.Z != 0)
 							throw new NotImplementedException();
 						double displacement_len = displacement.Length;
@@ -331,14 +408,18 @@ namespace mfp2
 				}
 				double u =  u0/ rs;
 				double t = t0/rs;
-				if (u < 0 || 1 < u || t < 0 || 1 < t)
+				if (u <= 0 || 1 <= u || t <= 0 || 1 <= t)
 				{
-					return; //lines do not intersect
+					//return; //lines do not intersect
 				}
 				line_intersection = p.q + u*s;
+				
 				line_normal = r.normal_2d();
-				collision_normal = line_normal;
-				intersection = line_intersection;
+				
+				intersections.Add(line_intersection);
+				collision_normals.Add(line_normal);
+				collision_vectors.Add(p.q-line_intersection);
+				
 				
 				Vector4 gradient = (p.q) ^ line_normal;
 				
@@ -346,11 +427,13 @@ namespace mfp2
 				double mv2 = (mv1*line_normal);
 				double mv3 = (gradient * gradient);
 				double mv4 = (mv2/mv3);
-				Vector4 delta_p = - mv4* gradient;
+				Vector4 delta_p = - mv4 * gradient;
 				double total_w = p.w + a.w + b.w;
-				p.q += delta_p*(p.w/total_w);
-				a.q += -(a.w/total_w)*delta_p;
-				b.q += -(b.w/total_w)*delta_p;
+				
+				delta_p = (line_intersection-p.q);
+				p.q += delta_p;
+				a.q += -1*delta_p;
+				b.q += -1*delta_p;
 			}
 
 		}
