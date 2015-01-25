@@ -42,10 +42,10 @@ namespace mfp2
 		public bool draw_aabb = true;
 		
 		public double dt = 3e-10; // krok interpolacie (delta t)
-		public double kd = 0.99999;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
+		public double kd = 1-1e-10;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
 		public int spring_size = 80; // dlzka springu ktory spawnujeme
 
-		double _kc = 0.99999;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
+		double _kc = 1-1e-10;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
 		public double kc { // corrections damping
 			get { return _kc; }
 			set { _kc = value; refresh_in_k();}
@@ -94,7 +94,7 @@ namespace mfp2
 			system_step = (system_step + 1) % system_step_mod;
 			
 			if (system_step % particle_spawn_mod == 1){
-				Spawn(spring_size);
+				//Spawn(spring_size);
 			}
 			
 			// 1: Remove old particles
@@ -192,6 +192,10 @@ namespace mfp2
 			//no friction or resistution is needed
 		}
 		
+		public void Spawn()
+		{
+			Spawn(spring_size);
+		}
 		public void Spawn(double size)
 		{
 			particle_groups.Add(new ParticleGroupTriangle(size, System_step));

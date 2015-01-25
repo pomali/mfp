@@ -136,7 +136,7 @@ namespace mfp2
 			// 
 			// num_kc
 			// 
-			this.num_kc.DecimalPlaces = 8;
+			this.num_kc.DecimalPlaces = 10;
 			this.num_kc.Increment = new decimal(new int[] {
 									1,
 									0,
@@ -155,7 +155,7 @@ namespace mfp2
 			// 
 			// num_kd
 			// 
-			this.num_kd.DecimalPlaces = 8;
+			this.num_kd.DecimalPlaces = 10;
 			this.num_kd.Increment = new decimal(new int[] {
 									5,
 									0,

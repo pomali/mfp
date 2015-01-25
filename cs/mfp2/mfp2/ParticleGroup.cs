@@ -271,10 +271,10 @@ namespace mfp2
 			double y2 = 0;
 			foreach (Particle p in particles)
 			{
-				x1 = Math.Min(x1, p.position.X);
-				x2 = Math.Max(x2, p.position.X);
-				y1 = Math.Min(y1, p.position.Y);
-				y2 = Math.Max(y2, p.position.Y);
+				x1 = Math.Min(x1, p.q.X);
+				x2 = Math.Max(x2, p.q.X);
+				y1 = Math.Min(y1, p.q.Y);
+				y2 = Math.Max(y2, p.q.Y);
 			}
 			
 			return new AABBox(x1,x2,y1,y2);
@@ -302,9 +302,9 @@ namespace mfp2
 			a = AddParticle(Brushes.Blue, rnd.Next() + 1);
 			a.position = new Vector4(400,80,1,1);
 			a = AddParticle(Brushes.Red, rnd.Next() + 2);
-			a.position = new Vector4(400,50,1,1);
+			a.position = new Vector4(385,106,1,1);
 			a = AddParticle(Brushes.Green, rnd.Next() + 3);
-			a.position = new Vector4(430,80,1,1);
+			a.position = new Vector4(370,80,1,1);
 
 			AddPair(0,1);
 			AddPair(1,2);
@@ -344,24 +344,10 @@ namespace mfp2
 			{
 				colliding = true;
 				Vector4 line_normal;
-				Vector4 line_intersection;
+				Vector4 line_intersection = new Vector4();
 				Particle a = null, b = null;
-				if(!SameSideOfLine(p.q, p.position, particles[0].q, particles[1].q))
+				if (is_inside(p.position))
 				{
-					a = particles[0];
-					b = particles[1];
-				}
-				else if(!SameSideOfLine(p.q, p.position, particles[1].q, particles[2].q))
-				{
-					a = particles[1];
-					b = particles[2];
-				}
-				else if(!SameSideOfLine(p.q, p.position, particles[2].q, particles[0].q))
-				{
-					a = particles[2];
-					b = particles[0];
-				}
-				else{
 					// fallback na staticky collision resolving
 					List<Particle> origins = new List<Particle>();
 					List<Particle> targets = new List<Particle>();
@@ -380,7 +366,7 @@ namespace mfp2
 					foreach(var ot in pairs)
 					{
 						Vector4 line = ot.Target.q - ot.Origin.q;
-						 Vector4 displacement = ((((p.q - ot.Origin.q)*line.unit_vector())*line.unit_vector())-line);
+						Vector4 displacement = (((p.q - ot.Origin.q)*line.unit_vector())*line.unit_vector())-(p.q-ot.Origin.q); // FIXME
 						if (displacement.W != 0 || displacement.Z != 0)
 							throw new NotImplementedException();
 						double displacement_len = displacement.Length;
@@ -388,34 +374,61 @@ namespace mfp2
 						if (displacement_len<prev_min)
 						{
 							prev_min = displacement_len;
+							line_intersection = p.q+displacement;
 							a = ot.Target;
 							b = ot.Origin;
 						}
 					}
 				}
+				else
+				{
+					if(!SameSideOfLine(p.q, p.position, particles[0].q, particles[1].q))
+					{
+						a = particles[0];
+						b = particles[1];
+					}
+					else if(!SameSideOfLine(p.q, p.position, particles[1].q, particles[2].q))
+					{
+						a = particles[1];
+						b = particles[2];
+					}
+					else if(!SameSideOfLine(p.q, p.position, particles[2].q, particles[0].q))
+					{
+						a = particles[2];
+						b = particles[0];
+					}
+					Vector4 r,s,qp;
+					double u,t,rxs;
+					
+					r = (a.q - b.q);
+					s = (p.position - p.q);
+					qp = (p.q - b.q);
+					rxs = r.X*s.Y - r.Y*s.X;
+					if (rxs==0)
+					{
+						return; //su kolinearne alebo paralelne
+					}
+					
+					t = (qp.X*s.Y - qp.Y*s.X)/rxs;
+					u = (qp.X*r.Y - qp.Y*r.X)/rxs;
+					if ((0<=t && t<=1) && (0<=u && u<=1)){
+						line_intersection = b.q + t*r;
+					}
+					else{
+						return;
+					}
+				}
 				if (a == null)
-				{throw new NotImplementedException();}
+					{throw new NotImplementedException();}
 				
-				Vector4 r = (a.q - b.q);
-				Vector4 s = (p.position - p.q);
-				Vector4 l = (p.q-b.q);
-				double u0 = (l.X*r.Y - r.X*l.Y);
-				double t0 = (l.X*s.Y - s.X*l.Y);
-				double rs = (r.X * s.Y - s.X * r.Y);
-				if (rs==0)
+				
+				
+				line_normal = (a.q-b.q).normal_2d();
+				if (line_normal * (p.q - b.q)> 0)
 				{
-						return; // lines are collinear or parallel
+					line_normal = -1*line_normal;
 				}
-				double u =  u0/rs;
-				double t = t0/rs;
-				if (u < 0 || 1 < u || t < 0 || 1 < t)
-				{
-					//return; //lines do not intersect
-				}
-				line_intersection = p.q + u*s;
-				
-				line_normal = r.normal_2d();
-				
+					
 				intersections.Add(line_intersection);
 				collision_normals.Add(line_normal);
 				collision_vectors.Add(p.q-line_intersection);

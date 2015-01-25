@@ -22,7 +22,7 @@ namespace mfp2
 		
 		PBDSystem pbd;
 		
-		int tb_dt_const = 1000000;
+		int tb_dt_const = 1000000000;
 		
 		public MainForm()
 		{
@@ -148,7 +148,7 @@ namespace mfp2
 		
 		void MainFormClick(object sender, EventArgs e)
 		{
-
+			pbd.Spawn();
 		}
 		
 		void MainFormResizeEnd(object sender, EventArgs e)
