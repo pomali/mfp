@@ -192,7 +192,7 @@ namespace mfp2
 			ic = intersections.Zip(collision_vectors, (i, n) => new { Intersection = i, CNormal = n});
 			foreach(var k in ic){
 				Vector4 intersection = k.Intersection;
-				Vector4 v  = intersection + k.CNormal;
+				Vector4 v  = intersection - k.CNormal;
 				g.DrawLine(Pens.Cyan, (float)intersection.X, (float)intersection.Y, (float)v.X, (float)v.Y);
 			}
 			
@@ -313,28 +313,28 @@ namespace mfp2
 		
 		public bool is_inside(Vector4 p)
 		{
-			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
-				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
-				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
+//			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
+//				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
+//				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
 			
 //			
-//			Vector4 v0 = particles[1].q - particles[0].q;
-//			Vector4 v1 = particles[2].q - particles[0].q;
-//			Vector4 v2 = p - particles[0].q;
-//			
-//			double dot00 = v0*v0;
-//			double dot01 = v0*v1;
-//			double dot02 = v0*v2;
-//			double dot11 = v1*v1;
-//			double dot12 = v1*v2;
-//			
-//			// Compute barycentric coordinates
-//			double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-//			double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-//			double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-//			
-//			// Check if point is in triangle
-//			return (u >= 0) && (v >= 0) && ( 1 - (u + v) >= 0);
+			Vector4 v0 = particles[1].q - particles[0].q;
+			Vector4 v1 = particles[2].q - particles[0].q;
+			Vector4 v2 = p - particles[0].q;
+			
+			double dot00 = v0*v0;
+			double dot01 = v0*v1;
+			double dot02 = v0*v2;
+			double dot11 = v1*v1;
+			double dot12 = v1*v2;
+			
+			// Compute barycentric coordinates
+			double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+			double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+			double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+			
+			// Check if point is in triangle
+			return (u >= 0) && (v >= 0) && ( 1 - (u + v) >= 0);
 		}
 		
 		
@@ -397,6 +397,9 @@ namespace mfp2
 						a = particles[2];
 						b = particles[0];
 					}
+					else{
+						throw new NotImplementedException();
+					}
 					Vector4 r,s,qp;
 					double u,t,rxs;
 					
@@ -422,31 +425,25 @@ namespace mfp2
 					{throw new NotImplementedException();}
 				
 				
-				
-				line_normal = (a.q-b.q).normal_2d();
+				Vector4 ab = (a.q-b.q);
+				line_normal = ab.normal_2d();
 				if (line_normal * (p.q - b.q)> 0)
 				{
 					line_normal = -1*line_normal;
 				}
 					
+				Vector4 diff = line_intersection-p.q;
 				intersections.Add(line_intersection);
 				collision_normals.Add(line_normal);
-				collision_vectors.Add(p.q-line_intersection);
+				collision_vectors.Add(diff);
 				
-				
-				Vector4 gradient = (p.q) ^ line_normal;
-				
-				Vector4 mv1 = (p.q - line_intersection);
-				double mv2 = (mv1*line_normal);
-				double mv3 = (gradient * gradient);
-				double mv4 = (mv2/mv3);
-				Vector4 delta_p = - mv4 * gradient;
 				double total_w = p.w + a.w + b.w;
-				
-				delta_p = (line_intersection-p.q);
-				p.q += (p.w/total_w)*delta_p;
-				a.q += -1*(a.w/total_w)*delta_p;
-				b.q += -1*(b.w/total_w)*delta_p;
+				double a_l = (a.q-line_intersection).Length;
+				double b_l = (b.q-line_intersection).Length;
+				double total_l = a_l + b_l;
+				p.q += diff;//(p.w/total_w)*diff;
+				a.q += -1*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
+				b.q += -1*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
 			}
 
 		}

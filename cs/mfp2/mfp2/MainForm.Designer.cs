@@ -61,6 +61,7 @@ namespace mfp2
 			this.panel4 = new System.Windows.Forms.Panel();
 			this.tB_dt = new System.Windows.Forms.TrackBar();
 			this.lbl_dt = new System.Windows.Forms.Label();
+			this.cb_autospawn = new System.Windows.Forms.CheckBox();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.num_kc)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.num_kd)).BeginInit();
@@ -105,6 +106,7 @@ namespace mfp2
 			// 
 			this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.panel2.Controls.Add(this.label2);
+			this.panel2.Controls.Add(this.tb_time_speed);
 			this.panel2.Controls.Add(this.label1);
 			this.panel2.Controls.Add(this.num_kc);
 			this.panel2.Controls.Add(this.num_kd);
@@ -115,7 +117,7 @@ namespace mfp2
 			this.panel2.Controls.Add(this.panel4);
 			this.panel2.Location = new System.Drawing.Point(645, 12);
 			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(127, 470);
+			this.panel2.Size = new System.Drawing.Size(127, 498);
 			this.panel2.TabIndex = 7;
 			// 
 			// label2
@@ -174,7 +176,7 @@ namespace mfp2
 			// 
 			// groupBox2
 			// 
-			this.groupBox2.Controls.Add(this.tb_time_speed);
+			this.groupBox2.Controls.Add(this.cb_autospawn);
 			this.groupBox2.Controls.Add(this.buttonRestart);
 			this.groupBox2.Controls.Add(this.lbl_system_step);
 			this.groupBox2.Controls.Add(this.btnStep);
@@ -190,7 +192,7 @@ namespace mfp2
 			// tb_time_speed
 			// 
 			this.tb_time_speed.LargeChange = 20;
-			this.tb_time_speed.Location = new System.Drawing.Point(4, 98);
+			this.tb_time_speed.Location = new System.Drawing.Point(6, 438);
 			this.tb_time_speed.Maximum = 220;
 			this.tb_time_speed.Minimum = 30;
 			this.tb_time_speed.Name = "tb_time_speed";
@@ -223,7 +225,7 @@ namespace mfp2
 			// 
 			this.cb_aabb.Location = new System.Drawing.Point(0, 68);
 			this.cb_aabb.Name = "cb_aabb";
-			this.cb_aabb.Size = new System.Drawing.Size(104, 24);
+			this.cb_aabb.Size = new System.Drawing.Size(104, 17);
 			this.cb_aabb.TabIndex = 13;
 			this.cb_aabb.Text = "draw AABB";
 			this.cb_aabb.UseVisualStyleBackColor = true;
@@ -357,6 +359,16 @@ namespace mfp2
 			this.lbl_dt.Tag = "dt";
 			this.lbl_dt.Text = "dt";
 			// 
+			// cb_autospawn
+			// 
+			this.cb_autospawn.Location = new System.Drawing.Point(1, 91);
+			this.cb_autospawn.Name = "cb_autospawn";
+			this.cb_autospawn.Size = new System.Drawing.Size(104, 20);
+			this.cb_autospawn.TabIndex = 15;
+			this.cb_autospawn.Text = "autospawn";
+			this.cb_autospawn.UseVisualStyleBackColor = true;
+			this.cb_autospawn.CheckedChanged += new System.EventHandler(this.Cb_autospawnCheckedChanged);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -371,10 +383,10 @@ namespace mfp2
 			this.SizeChanged += new System.EventHandler(this.MainFormSizeChanged);
 			this.Click += new System.EventHandler(this.MainFormClick);
 			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.num_kc)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.num_kd)).EndInit();
 			this.groupBox2.ResumeLayout(false);
-			this.groupBox2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.tb_time_speed)).EndInit();
 			this.groupBox1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.num_size)).EndInit();
@@ -389,6 +401,7 @@ namespace mfp2
 			((System.ComponentModel.ISupportInitialize)(this.tB_dt)).EndInit();
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.CheckBox cb_autospawn;
 		private System.Windows.Forms.TrackBar tb_time_speed;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;

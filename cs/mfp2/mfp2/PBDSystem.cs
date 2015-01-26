@@ -40,6 +40,8 @@ namespace mfp2
 		int system_step = 0; // aktualny krok systemu (modulo system_step_mod kvoli citatelnosti a podobne)
 		public int lifetime = 350; // particle liftime v krokoch systemu
 		public bool draw_aabb = true;
+		public bool autospawn = false;
+			
 		
 		public double dt = 3e-10; // krok interpolacie (delta t)
 		public double kd = 1-1e-10;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
@@ -93,8 +95,8 @@ namespace mfp2
 		{
 			system_step = (system_step + 1) % system_step_mod;
 			
-			if (system_step % particle_spawn_mod == 1){
-				//Spawn(spring_size);
+			if (autospawn && (system_step % particle_spawn_mod == 1)){
+				Spawn(spring_size);
 			}
 			
 			// 1: Remove old particles
