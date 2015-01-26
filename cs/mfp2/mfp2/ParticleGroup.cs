@@ -75,7 +75,7 @@ namespace mfp2
 			//Y zdola
 			double ca = a.q.Y - limitY;
 			double cb = b.q.Y - limitY;
-			if (ca >= 1)
+			if (ca > 0)
 			{
 				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
 			}
@@ -277,7 +277,7 @@ namespace mfp2
 				y2 = Math.Max(y2, p.q.Y);
 			}
 			
-			return new AABBox(x1,x2,y1,y2);
+			return new AABBox(x1-10,x2+10,y1-10,y2+10);
 		}
 		
 		
@@ -313,28 +313,28 @@ namespace mfp2
 		
 		public bool is_inside(Vector4 p)
 		{
-//			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
-//				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
-//				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
+			return SameSideOfLine(p, particles[2].q, particles[0].q, particles[1].q)
+				&& SameSideOfLine(p, particles[0].q, particles[1].q, particles[2].q)
+				&& SameSideOfLine(p, particles[1].q, particles[2].q, particles[0].q);
 			
 //			
-			Vector4 v0 = particles[1].q - particles[0].q;
-			Vector4 v1 = particles[2].q - particles[0].q;
-			Vector4 v2 = p - particles[0].q;
-			
-			double dot00 = v0*v0;
-			double dot01 = v0*v1;
-			double dot02 = v0*v2;
-			double dot11 = v1*v1;
-			double dot12 = v1*v2;
-			
-			// Compute barycentric coordinates
-			double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-			double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-			double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-			
-			// Check if point is in triangle
-			return (u >= 0) && (v >= 0) && ( 1 - (u + v) >= 0);
+//			Vector4 v0 = particles[1].q - particles[0].q;
+//			Vector4 v1 = particles[2].q - particles[0].q;
+//			Vector4 v2 = p - particles[0].q;
+//			
+//			double dot00 = v0*v0;
+//			double dot01 = v0*v1;
+//			double dot02 = v0*v2;
+//			double dot11 = v1*v1;
+//			double dot12 = v1*v2;
+//			
+//			// Compute barycentric coordinates
+//			double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+//			double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+//			double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+//			
+//			// Check if point is in triangle
+//			return (u >= 0) && (v >= 0) && ( 1 - (u + v) >= 0);
 		}
 		
 		
@@ -346,11 +346,13 @@ namespace mfp2
 				Vector4 line_normal;
 				Vector4 line_intersection = new Vector4();
 				Particle a = null, b = null;
+				
 				if (is_inside(p.position))
 				{
 					// fallback na staticky collision resolving
 					List<Particle> origins = new List<Particle>();
 					List<Particle> targets = new List<Particle>();
+					
 					origins.Add(particles[0]);
 					targets.Add(particles[1]);
 					
@@ -398,7 +400,7 @@ namespace mfp2
 						b = particles[0];
 					}
 					else{
-						throw new NotImplementedException();
+						throw new NotImplementedException(); 
 					}
 					Vector4 r,s,qp;
 					double u,t,rxs;
@@ -441,13 +443,13 @@ namespace mfp2
 				double a_l = (a.q-line_intersection).Length;
 				double b_l = (b.q-line_intersection).Length;
 				double total_l = a_l + b_l;
-				p.q += diff;//(p.w/total_w)*diff;
-				a.q += -1*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
-				b.q += -1*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
+				p.q += (p.w/total_w)*diff;
+				a.q += -1*(1-(p.w/total_w))*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
+				b.q += -1*(1-(p.w/total_w))*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
 			}
-
-		}
-	}
+		} /*ProjectCollisionConstraint end*/
+		
+	} /*class end*/
 	
 	public class ParticleGroupRectangle : ParticleGroup
 	{
@@ -468,9 +470,109 @@ namespace mfp2
 			AddPair(1,3, uhlopriecka);
 		}
 		
+		
+		public Vector4 cog()
+		{
+			return (1/4)*(particles[0].q +particles[1].q +particles[2].q +particles[3].q);
+		}
+		
+		public bool is_inside(Vector4 p)
+		{
+			bool ret = true;
+			Vector4 c = cog();
+			foreach(ParticlePair pair in particle_pairs.Take(4))
+			{
+				ret &= SameSideOfLine(p, c, pair.a.q, pair.b.q);
+			}
+			return ret;
+		}
+		
 		public override void ProjectCollisionConstraint(Particle p)
 		{
-			throw new NotImplementedException();
+			if (is_inside(p.q)) //ak je q vnutri trojuholniku
+			{
+				colliding = true;
+				Vector4 line_normal;
+				Vector4 line_intersection = new Vector4();
+				Particle a = null, b = null;
+				if (is_inside(p.position))
+				{
+					// fallback na staticky collision resolving
+					double prev_min = Double.MaxValue;
+					foreach(ParticlePair pair in particle_pairs.Take(4))
+					{
+						Vector4 line = pair.a.q - pair.b.q;
+						Vector4 displacement = (((p.q - pair.b.q)*line.unit_vector())*line.unit_vector())-(p.q-pair.b.q);
+						if (displacement.W != 0 || displacement.Z != 0)
+							throw new NotImplementedException();
+						double displacement_len = displacement.Length;
+						
+						if (displacement_len<prev_min)
+						{
+							prev_min = displacement_len;
+							line_intersection = p.q+displacement;
+							a = pair.a;
+							b = pair.b;
+						}
+					}
+				}
+				else
+				{
+					foreach(ParticlePair pair in particle_pairs.Take(4)){
+						if(!SameSideOfLine(p.q, p.position,pair.a.q, pair.b.q))
+						{
+							a = pair.a;
+							b = pair.b;
+						}
+					}
+					
+					Vector4 r,s,qp;
+					double u,t,rxs;
+					
+					r = (a.q - b.q);
+					s = (p.position - p.q);
+					qp = (p.q - b.q);
+					rxs = r.X*s.Y - r.Y*s.X;
+					if (rxs==0)
+					{
+						return; //su kolinearne alebo paralelne
+					}
+					
+					t = (qp.X*s.Y - qp.Y*s.X)/rxs;
+					u = (qp.X*r.Y - qp.Y*r.X)/rxs;
+					if ((0<=t && t<=1) && (0<=u && u<=1)){
+						line_intersection = b.q + t*r;
+					}
+					else{
+						return;
+					}
+				}
+				
+				if (a == null)
+					{throw new NotImplementedException();}
+				
+				
+				Vector4 ab = (a.q-b.q);
+				line_normal = ab.normal_2d();
+				if (line_normal * (p.q - b.q)> 0)
+				{
+					line_normal = -1*line_normal;
+				}
+					
+				Vector4 diff = line_intersection-p.q;
+				intersections.Add(line_intersection);
+				collision_normals.Add(line_normal);
+				collision_vectors.Add(diff);
+				
+				double total_w = p.w + a.w + b.w;
+				double a_l = (a.q-line_intersection).Length;
+				double b_l = (b.q-line_intersection).Length;
+				double total_l = a_l + b_l;
+//				p.q += (p.w/total_w)*diff;
+//				a.q += -1*(1-(p.w/total_w))*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
+//				b.q += -1*(1-(p.w/total_w))*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
+			}
+
 		}
 	}
 }

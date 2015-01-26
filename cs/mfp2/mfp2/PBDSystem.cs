@@ -32,27 +32,33 @@ namespace mfp2
 	public class PBDSystem
 	{
 		List<ParticleGroup> particle_groups = new List<ParticleGroup>();
-		static Vector4 g_acceleration = new Vector4(0,981000,0,0); // gravitacne zrychlenie
+		static Vector4 _g_acceleration = new Vector4(0,981000,0,0); // gravitacne zrychlenie
+		
 		static int system_step_mod = (int)1e6;
 		static int particle_spawn_mod = 40;
 		public double limit_Y = 550; // "vyska" podlahy
 		public double limit_X = 550; // "sirka"
 		int system_step = 0; // aktualny krok systemu (modulo system_step_mod kvoli citatelnosti a podobne)
-		public int lifetime = 350; // particle liftime v krokoch systemu
-		public bool draw_aabb = true;
-		public bool autospawn = false;
+		public int lifetime = 500; // particle liftime v krokoch systemu
+		public bool draw_aabb = false;
+		public bool autospawn = true;
+		public bool compute_collisions = true;
 			
 		
-		public double dt = 3e-10; // krok interpolacie (delta t)
+		public double dt = 3e-20; // krok interpolacie (delta t)
 		public double kd = 1-1e-10;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
 		public int spring_size = 80; // dlzka springu ktory spawnujeme
 
-		double _kc = 1-1e-10;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
+		double _kc = 1-1e-2;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
 		public double kc { // corrections damping
 			get { return _kc; }
 			set { _kc = value; refresh_in_k();}
 		}
 
+		
+		public Vector4 g_acceleration {
+			get { return _g_acceleration; }
+		}
 
 		int _ns = 1;        // pocet iteracii 
 		public int ns { // pocet iteracii
@@ -119,7 +125,7 @@ namespace mfp2
             {
 				foreach(Particle p in x.particles)
 				{
-					p.velocity += dt * p.mass * g_acceleration;
+					p.velocity +=  p.mass * g_acceleration;
 				}
             }
 			
@@ -144,23 +150,25 @@ namespace mfp2
 			
 			List<CollisionPair> collisions = new List<CollisionPair>();
 			//6: detect and construct collision constraints
-			foreach (ParticleGroup pg1 in particle_groups)
-            {
-				AABBox aabb = pg1.aabb();
-				foreach(ParticleGroup pg2 in particle_groups)
-				{
-					if (pg1!=pg2)
+			if (compute_collisions){
+				foreach (ParticleGroup pg1 in particle_groups)
+	            {
+					AABBox aabb = pg1.aabb();
+					foreach(ParticleGroup pg2 in particle_groups)
 					{
-						foreach(Particle p in pg2.particles)
+						if (pg1!=pg2)
 						{
-							if (aabb.is_inside(p.q))
+							foreach(Particle p in pg2.particles)
 							{
-								collisions.Add(new CollisionPair(p,pg1));
+								if (aabb.is_inside(p.q))
+								{
+									collisions.Add(new CollisionPair(p,pg1));
+								}
 							}
 						}
 					}
-				}
-            }
+	            }
+			}
 			
 			
 			//7: apply "projection" several times on all constraints
@@ -173,9 +181,11 @@ namespace mfp2
 					x.ProjectFloorConstraints(limit_X, limit_Y, in_k);
 	            }
 				
-				foreach(CollisionPair c in collisions)
-				{
-					c.pg.ProjectCollisionConstraint(c.p);
+				if(compute_collisions){
+					foreach(CollisionPair c in collisions)
+					{
+						c.pg.ProjectCollisionConstraint(c.p);
+					}
 				}
 			}
 			
@@ -201,6 +211,7 @@ namespace mfp2
 		public void Spawn(double size)
 		{
 			particle_groups.Add(new ParticleGroupTriangle(size, System_step));
+			//particle_groups.Add(new ParticleGroupRectangle(size, System_step));
 		}
 	}
 }

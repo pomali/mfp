@@ -84,6 +84,7 @@ namespace mfp2
 			pbd.limit_X = Size.Width;
 			pbd.limit_Y = Size.Height-60;
 			cb_autospawn.Checked = pbd.autospawn;
+			cp_compute_collisions.Checked = pbd.compute_collisions;
 			
 			lbl_dt.Text = lbl_dt.Tag + ": " + pbd.dt.ToString();
 		}
@@ -167,6 +168,16 @@ namespace mfp2
 		void Cb_autospawnCheckedChanged(object sender, EventArgs e)
 		{
 			pbd.autospawn = cb_autospawn.Checked;
+		}
+		
+		void Panel2Paint(object sender, PaintEventArgs e)
+		{
+			
+		}
+		
+		void Cp_compute_collisionsCheckedChanged(object sender, EventArgs e)
+		{
+			pbd.compute_collisions = cp_compute_collisions.Checked;			
 		}
 	}
 }
