@@ -45,11 +45,15 @@ namespace mfp2
 
 		}
 		
-		void TimerRedrawTick(object sender, EventArgs e)
+		void pbd_Step()
 		{
 			pbd.Update(); //ked chces zabavu tak to daj do onpaint a resizuj
 			this.Invalidate();
-
+		}
+		
+		void TimerRedrawTick(object sender, EventArgs e)
+		{
+			pbd_Step();
 		}
 		
 		void ButtonStartClick(object sender, EventArgs e)
@@ -80,10 +84,14 @@ namespace mfp2
 			num_solit.Value = (decimal) pbd.ns;
 			cb_aabb.Checked = pbd.draw_aabb;
 			num_size.Value = (decimal) pbd.spring_size;
-			pbd.limit_X = Size.Width;
-			pbd.limit_Y = Size.Height-60;
+			
 			cb_autospawn.Checked = pbd.autospawn;
 			cp_compute_collisions.Checked = pbd.compute_collisions;
+			
+			pbd.limit_X = Size.Width;
+			pbd.limit_Y = Size.Height-60;
+			pbd.presentation_interval = tb_time_speed.Value;
+			timerRedraw.Interval = tb_time_speed.Value;
 			
 			lbl_dt.Text = lbl_dt.Tag + ": " + pbd.dt.ToString();
 		}
@@ -117,8 +125,7 @@ namespace mfp2
 		
 		void BtnStepClick(object sender, EventArgs e)
 		{
-			this.Invalidate();
-			pbd.Update(); //ked chces zabavu tak to daj do onpaint a resizuj
+			pbd_Step();
 		}
 		
 		void Num_sizeValueChanged(object sender, EventArgs e)
@@ -145,6 +152,7 @@ namespace mfp2
 		void Tb_time_speedScroll(object sender, EventArgs e)
 		{
 			timerRedraw.Interval = tb_time_speed.Value;			
+			pbd.presentation_interval = tb_time_speed.Value;
 		}
 		
 		void MainFormClick(object sender, EventArgs e)
@@ -177,6 +185,11 @@ namespace mfp2
 		void Cp_compute_collisionsCheckedChanged(object sender, EventArgs e)
 		{
 			pbd.compute_collisions = cp_compute_collisions.Checked;			
+		}
+		
+		void Cb_normal_timeCheckedChanged(object sender, EventArgs e)
+		{
+			
 		}
 	}
 }

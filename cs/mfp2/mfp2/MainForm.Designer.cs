@@ -63,6 +63,7 @@ namespace mfp2
 			this.btnStep = new System.Windows.Forms.Button();
 			this.cb_aabb = new System.Windows.Forms.CheckBox();
 			this.num_kd = new System.Windows.Forms.NumericUpDown();
+			this.cb_normal_time = new System.Windows.Forms.CheckBox();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.tb_time_speed)).BeginInit();
 			this.panel4.SuspendLayout();
@@ -302,6 +303,7 @@ namespace mfp2
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.cb_normal_time);
 			this.groupBox2.Controls.Add(this.cp_compute_collisions);
 			this.groupBox2.Controls.Add(this.cb_autospawn);
 			this.groupBox2.Controls.Add(this.buttonRestart);
@@ -384,6 +386,16 @@ namespace mfp2
 			this.num_kd.TabIndex = 14;
 			this.num_kd.ValueChanged += new System.EventHandler(this.Num_kdValueChanged);
 			// 
+			// cb_normal_time
+			// 
+			this.cb_normal_time.Location = new System.Drawing.Point(5, 119);
+			this.cb_normal_time.Name = "cb_normal_time";
+			this.cb_normal_time.Size = new System.Drawing.Size(104, 15);
+			this.cb_normal_time.TabIndex = 17;
+			this.cb_normal_time.Text = "normal time";
+			this.cb_normal_time.UseVisualStyleBackColor = true;
+			this.cb_normal_time.CheckedChanged += new System.EventHandler(this.Cb_normal_timeCheckedChanged);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -416,6 +428,7 @@ namespace mfp2
 			((System.ComponentModel.ISupportInitialize)(this.num_kd)).EndInit();
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.CheckBox cb_normal_time;
 		private System.Windows.Forms.CheckBox cp_compute_collisions;
 		private System.Windows.Forms.CheckBox cb_autospawn;
 		private System.Windows.Forms.TrackBar tb_time_speed;

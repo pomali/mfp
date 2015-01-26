@@ -43,9 +43,11 @@ namespace mfp2
 		public bool draw_aabb = false;
 		public bool autospawn = true;
 		public bool compute_collisions = true;
+		public bool normal_time = true;
+		public int presentation_interval;
 			
 		
-		public double dt = 3e-2; // krok interpolacie (delta t)
+		public double dt = 1e-3; // krok interpolacie (delta t)
 		public double kd = 1-1e-10;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
 		public int spring_size = 80; // dlzka springu ktory spawnujeme
 
@@ -120,88 +122,90 @@ namespace mfp2
 				particle_groups.Remove(x);
 			}
 			
-			//3: external forces
-			foreach (ParticleGroup x in particle_groups)
-            {
-				foreach(Particle p in x.particles)
-				{
-					p.velocity +=  dt *  g_acceleration;
-				}
-            }
-			
-			//4: damp velocities
-			foreach (ParticleGroup x in particle_groups)
-            {
-				foreach(Particle p in x.particles)
-				{
-					//p.velocity += kd * x.velocity +  - p.velocity;
-					p.velocity = kd * p.velocity;
-				}
-            }
-			
-			//5: predict positions (simple explicit euler)
-			foreach (ParticleGroup x in particle_groups)
-            {
-				foreach(Particle p in x.particles)
-				{
-					p.q = p.position + dt * p.velocity;
-				}
-            }
-			
-			List<CollisionPair> collisions = new List<CollisionPair>();
-			//6: detect and construct collision constraints
-			if (compute_collisions){
-				foreach (ParticleGroup pg1 in particle_groups)
+			for (int ti=0; (ti<1) || (normal_time && (ti)*dt<(presentation_interval/1000.0)) ; ti++){ //normalize for human time 
+				//3: external forces
+				foreach (ParticleGroup x in particle_groups)
 	            {
-					AABBox aabb = pg1.aabb();
-					foreach(ParticleGroup pg2 in particle_groups)
+					foreach(Particle p in x.particles)
 					{
-						if (pg1!=pg2)
+						p.velocity +=  dt *  g_acceleration;
+					}
+	            }
+				
+				//4: damp velocities
+				foreach (ParticleGroup x in particle_groups)
+	            {
+					foreach(Particle p in x.particles)
+					{
+						//p.velocity += kd * x.velocity +  - p.velocity;
+						p.velocity = kd * p.velocity;
+					}
+	            }
+				
+				//5: predict positions (simple explicit euler)
+				foreach (ParticleGroup x in particle_groups)
+	            {
+					foreach(Particle p in x.particles)
+					{
+						p.q = p.position + dt * p.velocity;
+					}
+	            }
+				
+				List<CollisionPair> collisions = new List<CollisionPair>();
+				//6: detect and construct collision constraints
+				if (compute_collisions){
+					foreach (ParticleGroup pg1 in particle_groups)
+		            {
+						AABBox aabb = pg1.aabb();
+						foreach(ParticleGroup pg2 in particle_groups)
 						{
-							foreach(Particle p in pg2.particles)
+							if (pg1!=pg2)
 							{
-								if (aabb.is_inside(p.q))
+								foreach(Particle p in pg2.particles)
 								{
-									collisions.Add(new CollisionPair(p,pg1));
+									if (aabb.is_inside(p.q))
+									{
+										collisions.Add(new CollisionPair(p,pg1));
+									}
 								}
 							}
 						}
+		            }
+				}
+				
+				
+				//7: apply "projection" several times on all constraints
+				for (int i=0; i<ns; i++)
+				{
+					foreach (ParticleGroup x in particle_groups)
+		            {
+						// DistanceConstraints of springs
+						x.ProjectDistanceConstraints(in_k);
+						x.ProjectFloorConstraints(limit_X, limit_Y, in_k);
+		            }
+					
+					if(compute_collisions){
+						foreach(CollisionPair c in collisions)
+						{
+							c.pg.ProjectCollisionConstraint(c.p);
+						}
 					}
-	            }
-			}
-			
-			
-			//7: apply "projection" several times on all constraints
-			for (int i=0; i<ns; i++)
-			{
+				}
+				
+				
+				//8: find correct velocities
 				foreach (ParticleGroup x in particle_groups)
 	            {
-					// DistanceConstraints of springs
-					x.ProjectDistanceConstraints(in_k);
-					x.ProjectFloorConstraints(limit_X, limit_Y, in_k);
+					foreach(Particle p in x.particles)
+					{
+						p.velocity = (1.0/dt)*(p.q - p.position);
+						p.position = p.q;
+					}
 	            }
 				
-				if(compute_collisions){
-					foreach(CollisionPair c in collisions)
-					{
-						c.pg.ProjectCollisionConstraint(c.p);
-					}
-				}
+				//9: apply friction and resistution impulses on velocities
+				//no friction or resistution is needed
 			}
-			
-			
-			//8: find correct velocities
-			foreach (ParticleGroup x in particle_groups)
-            {
-				foreach(Particle p in x.particles)
-				{
-					p.velocity = (1.0/dt)*(p.q - p.position);
-					p.position = p.q;
-				}
-            }
-			
-			//9: apply friction and resistution impulses on velocities
-			//no friction or resistution is needed
 		}
 		
 		public void Spawn()
