@@ -31,8 +31,8 @@ namespace mfp2
 			Random rnd = new Random(seed);
 			velocity = new Vector4(3-(rnd.NextDouble()*6),-3,0,0);
 			position = new Vector4(400+rnd.Next(-10,10),80+rnd.Next(-10,10),1,1);
-			//mass = (rnd.NextDouble()*100+1)*mass_base;
 			mass = mass_base;
+			//mass = (rnd.NextDouble()*100+1)*mass_base;
 			brush = in_brush;
 		}
 		

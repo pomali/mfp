@@ -87,6 +87,7 @@ namespace mfp2
 			
 			cb_autospawn.Checked = pbd.autospawn;
 			cp_compute_collisions.Checked = pbd.compute_collisions;
+			cb_normal_time.Checked = pbd.normal_time;
 			
 			pbd.limit_X = Size.Width;
 			pbd.limit_Y = Size.Height-60;
@@ -189,7 +190,7 @@ namespace mfp2
 		
 		void Cb_normal_timeCheckedChanged(object sender, EventArgs e)
 		{
-			
+			pbd.normal_time = cb_normal_time.Checked;
 		}
 	}
 }

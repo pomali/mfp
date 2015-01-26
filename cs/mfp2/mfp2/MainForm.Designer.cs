@@ -57,13 +57,13 @@ namespace mfp2
 			this.num_size = new System.Windows.Forms.NumericUpDown();
 			this.num_kc = new System.Windows.Forms.NumericUpDown();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.cb_normal_time = new System.Windows.Forms.CheckBox();
 			this.cp_compute_collisions = new System.Windows.Forms.CheckBox();
 			this.cb_autospawn = new System.Windows.Forms.CheckBox();
 			this.lbl_system_step = new System.Windows.Forms.Label();
 			this.btnStep = new System.Windows.Forms.Button();
 			this.cb_aabb = new System.Windows.Forms.CheckBox();
 			this.num_kd = new System.Windows.Forms.NumericUpDown();
-			this.cb_normal_time = new System.Windows.Forms.CheckBox();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.tb_time_speed)).BeginInit();
 			this.panel4.SuspendLayout();
@@ -148,12 +148,12 @@ namespace mfp2
 			// tB_dt
 			// 
 			this.tB_dt.Location = new System.Drawing.Point(3, 16);
-			this.tB_dt.Maximum = 40;
-			this.tB_dt.Minimum = 1;
+			this.tB_dt.Maximum = 6;
+			this.tB_dt.Minimum = 2;
 			this.tB_dt.Name = "tB_dt";
 			this.tB_dt.Size = new System.Drawing.Size(101, 45);
 			this.tB_dt.TabIndex = 10;
-			this.tB_dt.Value = 1;
+			this.tB_dt.Value = 2;
 			this.tB_dt.Scroll += new System.EventHandler(this.TB_dtScroll);
 			// 
 			// lbl_dt
@@ -318,6 +318,16 @@ namespace mfp2
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "controls";
 			// 
+			// cb_normal_time
+			// 
+			this.cb_normal_time.Location = new System.Drawing.Point(5, 119);
+			this.cb_normal_time.Name = "cb_normal_time";
+			this.cb_normal_time.Size = new System.Drawing.Size(104, 15);
+			this.cb_normal_time.TabIndex = 17;
+			this.cb_normal_time.Text = "normal time";
+			this.cb_normal_time.UseVisualStyleBackColor = true;
+			this.cb_normal_time.CheckedChanged += new System.EventHandler(this.Cb_normal_timeCheckedChanged);
+			// 
 			// cp_compute_collisions
 			// 
 			this.cp_compute_collisions.Location = new System.Drawing.Point(5, 101);
@@ -385,16 +395,6 @@ namespace mfp2
 			this.num_kd.Size = new System.Drawing.Size(92, 20);
 			this.num_kd.TabIndex = 14;
 			this.num_kd.ValueChanged += new System.EventHandler(this.Num_kdValueChanged);
-			// 
-			// cb_normal_time
-			// 
-			this.cb_normal_time.Location = new System.Drawing.Point(5, 119);
-			this.cb_normal_time.Name = "cb_normal_time";
-			this.cb_normal_time.Size = new System.Drawing.Size(104, 15);
-			this.cb_normal_time.TabIndex = 17;
-			this.cb_normal_time.Text = "normal time";
-			this.cb_normal_time.UseVisualStyleBackColor = true;
-			this.cb_normal_time.CheckedChanged += new System.EventHandler(this.Cb_normal_timeCheckedChanged);
 			// 
 			// MainForm
 			// 

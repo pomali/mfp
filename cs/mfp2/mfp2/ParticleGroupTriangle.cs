@@ -156,8 +156,8 @@ namespace mfp2
 				double total_l = a_l + b_l;
 				double point_diff_contrib = (p.w/total_w);
 				p.q += point_diff_contrib*diff;
-				a.q += -1*(1-point_diff_contrib)*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
-				b.q += -1*(1-point_diff_contrib)*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
+				a.q += -(1/2.0)*(1-point_diff_contrib)*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
+				b.q += -(1/2.0)*(1-point_diff_contrib)*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
 			}
 		} /*ProjectCollisionConstraint end*/
 		

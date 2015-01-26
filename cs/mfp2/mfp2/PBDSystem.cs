@@ -43,15 +43,17 @@ namespace mfp2
 		public bool draw_aabb = false;
 		public bool autospawn = true;
 		public bool compute_collisions = true;
-		public bool normal_time = true;
+		public bool normal_time = false;
 		public int presentation_interval;
 			
 		
 		public double dt = 1e-3; // krok interpolacie (delta t)
 		public double kd = 1-1e-10;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
 		public int spring_size = 80; // dlzka springu ktory spawnujeme
-
+		
+		int _ns = 3;        // pocet iteracii 
 		double _kc = 1-1e-2;   // corrections damping konstanta aka cast korekcie je pouzivana (cim vacsia tym viac sa upravuju)
+
 		public double kc { // corrections damping
 			get { return _kc; }
 			set { _kc = value; refresh_in_k();}
@@ -62,7 +64,7 @@ namespace mfp2
 			get { return _g_acceleration*50; }
 		}
 
-		int _ns = 1;        // pocet iteracii 
+
 		public int ns { // pocet iteracii
 			get { return _ns; }
 			set { _ns = value; refresh_in_k();}
