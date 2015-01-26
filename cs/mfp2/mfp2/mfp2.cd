@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ClassDiagram Zoom="1" MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="mfp2.MainForm" Collapsed="False">
+    <Position X="0.5" Y="6.9" Width="2.153102" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="mfp2.Particle" Collapsed="False">
+    <Position X="0.5" Y="15.4" Width="1.58092" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="mfp2.ParticleGroup" Collapsed="False">
+    <Position X="0.5" Y="0.5" Width="2.155143" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="mfp2.ParticleGroupTriangle" Collapsed="False">
+    <Position X="0.5" Y="5.2" Width="2.787428" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="mfp2.ParticleGroupRectangle" Collapsed="False">
+    <Position X="3.6" Y="5.2" Width="2.98777" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="mfp2.AABBox" Collapsed="False">
+    <Position X="0.5" Y="18.7" Width="1.422204" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Struct Name="mfp2.CollisionPair" Collapsed="False">
+    <Position X="0.5" Y="21" Width="1.844157" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Struct>
+  <Class Name="mfp2.Program" Collapsed="False">
+    <Position X="0.5" Y="22.9" Width="1.444186" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="mfp2.MathEx" Collapsed="False">
+    <Position X="0.5" Y="24.3" Width="2.198288" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Struct Name="mfp2.Matrix44" Collapsed="False">
+    <Position X="0.5" Y="25.8" Width="1.958185" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Struct>
+  <Struct Name="mfp2.Vector4" Collapsed="False">
+    <Position X="0.5" Y="32.8" Width="1.763" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Struct>
+  <Class Name="mfp2.ParticlePair" Collapsed="False">
+    <Position X="0.5" Y="37.5" Width="2.155143" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="mfp2.PBDSystem" Collapsed="False">
+    <Position X="0.5" Y="41.1" Width="2.356989" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+</ClassDiagram>

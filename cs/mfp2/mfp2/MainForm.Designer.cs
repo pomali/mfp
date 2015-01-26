@@ -147,10 +147,12 @@ namespace mfp2
 			// tB_dt
 			// 
 			this.tB_dt.Location = new System.Drawing.Point(3, 16);
-			this.tB_dt.Maximum = 1000;
+			this.tB_dt.Maximum = 40;
+			this.tB_dt.Minimum = 1;
 			this.tB_dt.Name = "tB_dt";
 			this.tB_dt.Size = new System.Drawing.Size(101, 45);
 			this.tB_dt.TabIndex = 10;
+			this.tB_dt.Value = 1;
 			this.tB_dt.Scroll += new System.EventHandler(this.TB_dtScroll);
 			// 
 			// lbl_dt

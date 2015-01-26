@@ -22,8 +22,6 @@ namespace mfp2
 		
 		PBDSystem pbd;
 		
-		int tb_dt_const = 1000000000;
-		
 		public MainForm()
 		{
 			//
@@ -49,7 +47,7 @@ namespace mfp2
 		
 		void TimerRedrawTick(object sender, EventArgs e)
 		{
-						pbd.Update(); //ked chces zabavu tak to daj do onpaint a resizuj
+			pbd.Update(); //ked chces zabavu tak to daj do onpaint a resizuj
 			this.Invalidate();
 
 		}
@@ -76,7 +74,7 @@ namespace mfp2
 			pbd = new PBDSystem();
 			num_kd.Value = (decimal)(pbd.kd);
 			num_kc.Value = (decimal)(pbd.kc);
-			tB_dt.Value = (int)(pbd.dt*tb_dt_const);
+			tB_dt.Value = -(int)Math.Log10(pbd.dt);
 			num_ttl.Value = pbd.lifetime;
 			num_solit.Value = (decimal) pbd.ns;
 			cb_aabb.Checked = pbd.draw_aabb;
@@ -101,7 +99,7 @@ namespace mfp2
 		
 		void TB_dtScroll(object sender, EventArgs e)
 		{
-			double x = ((double)tB_dt.Value+1)/tb_dt_const;
+			double x = Math.Pow(10,-tB_dt.Value);
 			pbd.dt = x;
 			lbl_dt.Text = lbl_dt.Tag + ": " + x.ToString();
 		}

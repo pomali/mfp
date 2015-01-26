@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParticleGroupRectangle.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -68,6 +69,7 @@
     <Compile Include="Mathematics\Vector4.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleGroup.cs" />
+    <Compile Include="ParticleGroupTriangle.cs" />
     <Compile Include="PBDSystem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

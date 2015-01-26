@@ -32,7 +32,7 @@ namespace mfp2
 	public class PBDSystem
 	{
 		List<ParticleGroup> particle_groups = new List<ParticleGroup>();
-		static Vector4 _g_acceleration = new Vector4(0,981000,0,0); // gravitacne zrychlenie
+		static Vector4 _g_acceleration = new Vector4(0,9.81,0,0); // gravitacne zrychlenie
 		
 		static int system_step_mod = (int)1e6;
 		static int particle_spawn_mod = 40;
@@ -45,7 +45,7 @@ namespace mfp2
 		public bool compute_collisions = true;
 			
 		
-		public double dt = 3e-20; // krok interpolacie (delta t)
+		public double dt = 3e-2; // krok interpolacie (delta t)
 		public double kd = 1-1e-10;  // velocity damping konstanta, cim mensie tym viac umieraju rychlosti
 		public int spring_size = 80; // dlzka springu ktory spawnujeme
 
@@ -125,7 +125,7 @@ namespace mfp2
             {
 				foreach(Particle p in x.particles)
 				{
-					p.velocity +=  p.mass * g_acceleration;
+					p.velocity +=  dt *  g_acceleration;
 				}
             }
 			
