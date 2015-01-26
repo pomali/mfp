@@ -23,9 +23,9 @@ namespace mfp2
 			a = AddParticle(Brushes.Blue, rnd.Next() + 1);
 			a.position = new Vector4(400,80,1,1);
 			a = AddParticle(Brushes.Red, rnd.Next() + 2);
-			a.position = new Vector4(385,106,1,1);
+			a.position = new Vector4(400-in_size,80,1,1);
 			a = AddParticle(Brushes.Green, rnd.Next() + 3);
-			a.position = new Vector4(370,80,1,1);
+			a.position = new Vector4(400-(in_size/2),80+(in_size*0.86602540378),1,1);
 
 			AddPair(0,1);
 			AddPair(1,2);
@@ -106,23 +106,12 @@ namespace mfp2
 				}
 				else
 				{
-					if(!SameSideOfLine(p.q, p.position, particles[0].q, particles[1].q))
-					{
-						a = particles[0];
-						b = particles[1];
-					}
-					else if(!SameSideOfLine(p.q, p.position, particles[1].q, particles[2].q))
-					{
-						a = particles[1];
-						b = particles[2];
-					}
-					else if(!SameSideOfLine(p.q, p.position, particles[2].q, particles[0].q))
-					{
-						a = particles[2];
-						b = particles[0];
-					}
-					else{
-						throw new NotImplementedException(); 
+					foreach(ParticlePair pair in particle_pairs){
+						if(!SameSideOfLine(p.q, p.position,pair.a.q, pair.b.q))
+						{
+							a = pair.a;
+							b = pair.b;
+						}
 					}
 					Vector4 r,s,qp;
 					double u,t,rxs;
@@ -161,13 +150,14 @@ namespace mfp2
 				collision_normals.Add(line_normal);
 				collision_vectors.Add(diff);
 				
-				double total_w = p.w + a.w + b.w;
+				double total_w = p.w + 1/(a.mass + b.mass);
 				double a_l = (a.q-line_intersection).Length;
 				double b_l = (b.q-line_intersection).Length;
 				double total_l = a_l + b_l;
-				p.q += (p.w/total_w)*diff;
-				a.q += -1*(1-(p.w/total_w))*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
-				b.q += -1*(1-(p.w/total_w))*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
+				double point_diff_contrib = (p.w/total_w);
+				p.q += point_diff_contrib*diff;
+				a.q += -1*(1-point_diff_contrib)*diff;//-1*(a.w/total_w)*(a_l/total_l)*diff;
+				b.q += -1*(1-point_diff_contrib)*diff;//-1*(b.w/total_w)*(b_l/total_l)*diff;
 			}
 		} /*ProjectCollisionConstraint end*/
 		

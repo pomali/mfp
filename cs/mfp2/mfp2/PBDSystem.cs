@@ -57,7 +57,7 @@ namespace mfp2
 
 		
 		public Vector4 g_acceleration {
-			get { return _g_acceleration; }
+			get { return _g_acceleration*50; }
 		}
 
 		int _ns = 1;        // pocet iteracii 

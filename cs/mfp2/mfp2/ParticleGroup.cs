@@ -80,7 +80,7 @@ namespace mfp2
 				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
 			}
 			
-			if (cb >= 1)
+			if (cb > 0)
 			{
 				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
 				//b.q.Y = b.q.Y - cb - 1;
@@ -89,12 +89,12 @@ namespace mfp2
 			//Y zhora
 			 ca = -a.q.Y;
 			 cb = -b.q.Y;
-			if (ca >= 1)
+			if (ca > 0)
 			{
 				a.q = a.q + ((a.position - a.q) * (ca/Math.Abs(a.position.Y - a.q.Y)));
 			}
 			
-			if (cb >= 1)
+			if (cb > 0)
 			{
 				b.q = b.q + ((b.position - b.q) * (cb/Math.Abs(b.position.Y - b.q.Y)));
 				//b.q.Y = b.q.Y - cb - 1;

@@ -74,7 +74,8 @@ namespace mfp2
 			pbd = new PBDSystem();
 			num_kd.Value = (decimal)(pbd.kd);
 			num_kc.Value = (decimal)(pbd.kc);
-			tB_dt.Value = -(int)Math.Log10(pbd.dt);
+			double k = Math.Floor(Math.Log10(pbd.dt));
+			tB_dt.Value = -(int)k;
 			num_ttl.Value = pbd.lifetime;
 			num_solit.Value = (decimal) pbd.ns;
 			cb_aabb.Checked = pbd.draw_aabb;
